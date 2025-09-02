@@ -154,18 +154,48 @@
     .grid{display:grid; grid-template-columns:repeat(12, 1fr); gap:14px; margin-top:16px}
     .card{grid-column: span 3; background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02)); border:1px solid rgba(255,255,255,.08); border-radius:18px; overflow:hidden; position:relative; transition:transform .2s ease, box-shadow .2s ease}
     .card:hover{transform:translateY(-4px); box-shadow:0 20px 40px rgba(0,0,0,.35)}
-    .thumb{aspect-ratio:4/5; background:
-      radial-gradient(150% 120% at 80% 10%, rgba(0,212,255,.25), transparent 40%),
-      linear-gradient(135deg, #0a0e14, #0f141b);
-      display:grid; place-items:center}
-    .thumb span{font-size:2.4rem; opacity:.25}
+    .thumb{
+      aspect-ratio:4/5; 
+      background: radial-gradient(150% 120% at 80% 10%, rgba(0,212,255,.25), transparent 40%),
+                  linear-gradient(135deg, #0a0e14, #0f141b);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+    .card:hover .thumb img {
+      transform: scale(1.05);
+    }
     .info{padding:12px 14px 14px}
-    .title{font-weight:700}
+    .title{font-weight:700; margin-bottom: 8px;}
     .meta{display:flex; align-items:center; justify-content:space-between; gap:10px; color:var(--muted); font-size:.95rem}
     .price{font-weight:800; color:var(--fg)}
     .tag{font-size:.75rem; padding:6px 10px; border-radius:999px; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.04)}
     .quick{position:absolute; left:12px; top:12px; display:flex; gap:8px}
-    .quick button{padding:8px 10px; border-radius:10px; border:1px solid rgba(255,255,255,.18); background:rgba(255,255,255,.06); color:var(--fg); cursor:pointer}
+    .quick button{
+      padding:8px 10px; 
+      border-radius:10px; 
+      border:1px solid rgba(255,255,255,.18); 
+      background:rgba(255,255,255,.06); 
+      color:var(--fg); 
+      cursor:pointer;
+      backdrop-filter: blur(10px);
+    }
+    .quick button:hover {
+      background: rgba(0,212,255,.15);
+    }
+
+    /* Placeholder para imágenes que no cargan */
+    .thumb .placeholder {
+      font-size: 2.4rem;
+      opacity: .25;
+    }
 
     @media (max-width:1000px){ .card{grid-column: span 4} }
     @media (max-width:700px){ .card{grid-column: span 6} }
@@ -342,7 +372,7 @@
   <!-- CONTACTO -->
   <section id="contacto" aria-labelledby="contacto-title">
     <h2 id="contacto-title">Contacto</h2>
-    <p class="section-sub">¿Tienes una idea, cotización o colaboración? Escríbenos.</p>
+    <p class="section-sub">¿Tienes una idea, cotización o colaboración? Escríbenus.</p>
     <div class="contact-grid">
       <div class="contact-card">
         <h3 style="margin-top:0">Información</h3>
@@ -571,18 +601,18 @@
     const sort = document.getElementById('sort');
 
     const products = [
-      {id:1, name:'Playera Essential AKKUA', price:349, tag:'Unisex', cat:'Ropa', emoji:'👕'},
-      {id:2, name:'Sudadera Cian Gradient', price:899, tag:'Unisex', cat:'Ropa', emoji:'🧥'},
-      {id:3, name:'Pants Black Flow', price:799, tag:'Hombre', cat:'Ropa', emoji:'👖'},
-      {id:4, name:'Top Deportivo Wave', price:649, tag:'Mujer', cat:'Ropa', emoji:'👚'},
-      {id:5, name:'Gorra Logo Minimal', price:299, tag:'Unisex', cat:'Accesorios', emoji:'🧢'},
-      {id:6, name:'Mochila NeoSplash', price:1099, tag:'Unisex', cat:'Accesorios', emoji:'🎒'},
-      {id:7, name:'Botella Térmica 750ml', price:459, tag:'Gear', cat:'Accesorios', emoji:'🍼'},
-      {id:8, name:'Tenis Urban Aqua', price:1599, tag:'Unisex', cat:'Calzado', emoji:'👟'},
-      {id:9, name:'Sandalias Drift', price:499, tag:'Unisex', cat:'Calzado', emoji:'🩴'},
-      {id:10, name:'Rompevientos Boreal', price:1299, tag:'Unisex', cat:'Ropa', emoji:'🧥'},
-      {id:11, name:'Lentes IceShield', price:799, tag:'Gear', cat:'Accesorios', emoji:'🕶️'},
-      {id:12, name:'Calcetas Wave Pack (3)', price:249, tag:'Unisex', cat:'Accesorios', emoji:'🧦'}
+      {id:1, name:'Playera Essential AKKUA', price:349, tag:'Unisex', cat:'Ropa', image:'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'},
+      {id:2, name:'Sudadera Cian Gradient', price:899, tag:'Unisex', cat:'Ropa', image:'https://images.unsplash.com/photo-1556821840-3a63f95609a7?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'},
+      {id:3, name:'Pants Black Flow', price:799, tag:'Hombre', cat:'Ropa', image:'https://images.unsplash.com/photo-1542272604-787c3835535d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'},
+      {id:4, name:'Top Deportivo Wave', price:649, tag:'Mujer', cat:'Ropa', image:'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'},
+      {id:5, name:'Gorra Logo Minimal', price:299, tag:'Unisex', cat:'Accesorios', image:'https://images.unsplash.com/photo-1575428652377-a2d80e2277fc?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'},
+      {id:6, name:'Mochila NeoSplash', price:1099, tag:'Unisex', cat:'Accesorios', image:'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'},
+      {id:7, name:'Botella Térmica 750ml', price:459, tag:'Gear', cat:'Accesorios', image:'https://images.unsplash.com/photo-1602143407151-7111542de6e8?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'},
+      {id:8, name:'Tenis Urban Aqua', price:1599, tag:'Unisex', cat:'Calzado', image:'https://images.unsplash.com/photo-1542291026-7eec264c27ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'},
+      {id:9, name:'Sandalias Drift', price:499, tag:'Unisex', cat:'Calzado', image:'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'},
+      {id:10, name:'Rompevientos Boreal', price:1299, tag:'Unisex', cat:'Ropa', image:'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'},
+      {id:11, name:'Lentes IceShield', price:799, tag:'Gear', cat:'Accesorios', image:'https://images.unsplash.com/photo-1572635196237-14b3f281503f?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'},
+      {id:12, name:'Calcetas Wave Pack (3)', price:249, tag:'Unisex', cat:'Accesorios', image:'https://images.unsplash.com/photo-1588850790165-5d517ead7871?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'}
     ];
 
     const categories = ['Todos','Ropa','Accesorios','Calzado'];
@@ -617,13 +647,18 @@
     }
 
     function card(p){
-      const el = document.createElement('article'); el.className = 'card'; el.setAttribute('tabindex','0');
+      const el = document.createElement('article'); 
+      el.className = 'card'; 
+      el.setAttribute('tabindex','0');
+      
       el.innerHTML = `
         <div class="quick">
           <button title="Favorito">♡</button>
           <button title="Vista rápida">👁</button>
         </div>
-        <div class="thumb"><span>${p.emoji}</span></div>
+        <div class="thumb">
+          <img src="${p.image}" alt="${p.name}" onerror="this.style.display='none'; this.parentNode.innerHTML='<span class=\'placeholder\'>${p.emoji || '🛒'}</span>';">
+        </div>
         <div class="info">
           <div class="title">${p.name}</div>
           <div class="meta">
@@ -631,6 +666,7 @@
             <span class="price">$${p.price}</span>
           </div>
         </div>`;
+      
       return el;
     }
 
