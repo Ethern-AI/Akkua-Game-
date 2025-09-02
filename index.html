@@ -51,22 +51,25 @@
     @keyframes spin{to{transform:rotate(360deg)}}
 
     /* ---------- Header / Nav ---------- */
-    header{
-      position:sticky; top:0; z-index:50; backdrop-filter:saturate(1.1) blur(10px);
-      background:linear-gradient(180deg, rgba(10,11,14,.9), rgba(10,11,14,.6));
-      border-bottom:1px solid rgba(255,255,255,.06);
-    }
-    .nav{
-      max-width:1200px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:16px; padding:14px 20px;
-      position: relative;
-    }
-    .brand{display:flex; align-items:center; gap:12px; text-decoration:none; color:var(--fg); z-index: 10;}
-    .logo{
-      width:40px; height:40px; border-radius:12px; background: radial-gradient(120% 120% at 30% 20%, var(--cyan), var(--cyan-2));
-      display:grid; place-items:center; box-shadow:var(--shadow);
-    }
-    .logo svg{filter:drop-shadow(0 6px 16px rgba(0,212,255,.35))}
-    .brand span{font-weight:800; letter-spacing:.06em}
+    <header>
+  <div class="nav">
+    <a class="brand" href="#top" aria-label="AKKUA Inicio">
+      <img src="https://raw.githubusercontent.com/Ethern-AI/GAME/main/AKKUALOGO.png" alt="AKKUA Logo" width="40" height="40">
+    </a>
+    
+    <button class="menu-toggle" aria-label="Abrir menú">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    
+    <nav>
+      <a href="#jugar">Jugar</a>
+      <a href="#catalogo">Catálogo</a>
+      <a href="#contacto" class="cta">Contacto</a>
+    </nav>
+  </div>
+</header>
     
     /* Botón hamburguesa */
     .menu-toggle {
@@ -648,3 +651,4 @@
   </script>
 </body>
 </html>
+
