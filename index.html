@@ -25,22 +25,24 @@
     body{
       margin:0;
       font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
-      background: radial-gradient(1200px 800px at 80% -10%, rgba(0,212,255,.15), transparent 55%),
-                  radial-gradient(800px 600px at -10% 20%, rgba(0,184,229,.12), transparent 55%),
-                  var(--bg);
+      /* Nuevo fondo negro y blanco con efectos radiales */
+      background: radial-gradient(ellipse at 80% -10%, rgba(255,255,255,0.4), transparent 45%),
+                  radial-gradient(ellipse at -10% 20%, rgba(255,255,255,0.3), transparent 45%),
+                  radial-gradient(ellipse at 50% 100%, rgba(255,255,255,0.2), transparent 60%),
+                  #000000;
       color:var(--fg);
       line-height:1.5;
       scroll-behavior:smooth;
     }
     /* ---------- Loader ---------- */
     #loader{
-      position:fixed; inset:0; background:#050608; display:grid; place-items:center; z-index:9999;
+      position:fixed; inset:0; background:#000000; display:grid; place-items:center; z-index:9999;
       transition:opacity .6s ease, visibility .6s ease;
     }
     #loader.hidden{opacity:0; visibility:hidden}
     .spinner{
-      width:72px; height:72px; border-radius:50%; border:4px solid rgba(255,255,255,.12); border-top-color:var(--cyan);
-      animation:spin 1s linear infinite; position:relative; box-shadow:0 0 0 6px rgba(0,212,255,.08) inset;
+      width:72px; height:72px; border-radius:50%; border:4px solid rgba(255,255,255,.12); border-top-color:#ffffff;
+      animation:spin 1s linear infinite; position:relative; box-shadow:0 0 0 6px rgba(255,255,255,.08) inset;
     }
     .spinner::after{
       content:"AKKUA"; position:absolute; inset:auto 0 -28px 0; text-align:center; font-weight:700; font-size:.8rem; color:var(--muted);
@@ -51,8 +53,8 @@
     /* ---------- Header / Nav ---------- */
     header{
       position:sticky; top:0; z-index:50; backdrop-filter:saturate(1.1) blur(10px);
-      background:linear-gradient(180deg, rgba(10,11,14,.9), rgba(10,11,14,.6));
-      border-bottom:1px solid rgba(255,255,255,.06);
+      background:linear-gradient(180deg, rgba(0,0,0,.9), rgba(0,0,0,.6));
+      border-bottom:1px solid rgba(255,255,255,.1);
     }
     .nav{
       max-width:1200px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:16px; padding:14px 20px;
@@ -60,10 +62,10 @@
     }
     .brand{display:flex; align-items:center; gap:12px; text-decoration:none; color:var(--fg); z-index: 10;}
     .logo{
-      width:40px; height:40px; border-radius:12px; background: radial-gradient(120% 120% at 30% 20%, var(--cyan), var(--cyan-2));
+      width:40px; height:40px; border-radius:12px; background: radial-gradient(120% 120% at 30% 20%, #ffffff, #cccccc);
       display:grid; place-items:center; box-shadow:var(--shadow);
     }
-    .logo svg{filter:drop-shadow(0 6px 16px rgba(0,212,255,.35))}
+    .logo svg{filter:drop-shadow(0 6px 16px rgba(255,255,255,.2))}
     .brand span{font-weight:800; letter-spacing:.06em}
     
     /* Logo AKKUA */
@@ -104,18 +106,18 @@
     nav a{
       color:var(--muted); text-decoration:none; font-weight:600; padding:10px 14px; border-radius:12px; transition:all .2s ease;
     }
-    nav a:hover, nav a.active{color:var(--fg); background:rgba(0,212,255,.12)}
-    .cta{background:linear-gradient(135deg, var(--cyan), var(--cyan-2)); color:#02121a !important;}
+    nav a:hover, nav a.active{color:var(--fg); background:rgba(255,255,255,.15)}
+    .cta{background:linear-gradient(135deg, #ffffff, #cccccc); color:#000000 !important;}
 
     /* ---------- Hero ---------- */
     .hero{max-width:1200px; margin:24px auto 0; padding:40px 20px 20px; display:grid; grid-template-columns:1.2fr .8fr; gap:26px; align-items:center}
     .hero h1{font-size:clamp(28px, 3.2vw, 44px); line-height:1.1; margin:0 0 12px; font-weight:800}
     .hero p{color:var(--muted); margin:0 0 22px}
     .badges{display:flex; gap:10px; flex-wrap:wrap; margin:-6px 0 20px}
-    .badge{font-size:.8rem; padding:8px 12px; border-radius:999px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.08)}
+    .badge{font-size:.8rem; padding:8px 12px; border-radius:999px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.12)}
     .panel{
-      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
-      border:1px solid rgba(255,255,255,.08); border-radius:var(--radius); box-shadow:var(--shadow); padding:18px;
+      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+      border:1px solid rgba(255,255,255,.12); border-radius:var(--radius); box-shadow:var(--shadow); padding:18px;
     }
 
     /* ---------- Sections container ---------- */
@@ -126,35 +128,35 @@
     /* ---------- JUGAR (Snake) ---------- */
     .game-wrap{display:grid; grid-template-columns:1fr; gap:16px}
     .game-ui{display:flex; align-items:center; gap:12px; flex-wrap:wrap}
-    .pill{padding:8px 12px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.08); border-radius:12px}
+    .pill{padding:8px 12px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.12); border-radius:12px}
     .controls{display:flex; gap:8px; align-items:center}
-    .key{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-weight:700; font-size:.9rem; padding:8px 10px; border-radius:10px; border:1px solid rgba(255,255,255,.14); background:rgba(255,255,255,.04)}
+    .key{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-weight:700; font-size:.9rem; padding:8px 10px; border-radius:10px; border:1px solid rgba(255,255,255,.18); background:rgba(255,255,255,.06)}
 
     .game-area{display:grid; grid-template-columns:1fr; gap:14px}
-    canvas#board{width:100%; max-width:520px; aspect-ratio:1/1; border-radius:18px; background:radial-gradient(600px 400px at 10% 0%, rgba(0,212,255,.10), transparent 60%), #0a0d12; border:1px solid rgba(255,255,255,.08); box-shadow:var(--shadow)}
+    canvas#board{width:100%; max-width:520px; aspect-ratio:1/1; border-radius:18px; background:radial-gradient(600px 400px at 10% 0%, rgba(255,255,255,.12), transparent 60%), #0a0d12; border:1px solid rgba(255,255,255,.12); box-shadow:var(--shadow)}
 
     /* Joystick */
     .joystick{display:none; gap:10px; user-select:none}
     .joy-row{display:flex; justify-content:center; gap:10px}
-    .joy-btn{width:64px; height:64px; border-radius:16px; display:grid; place-items:center; border:1px solid rgba(255,255,255,.18); background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02)); box-shadow:var(--shadow); touch-action:manipulation; -webkit-tap-highlight-color: transparent}
-    .joy-btn:active{transform:scale(.98); background:rgba(0,212,255,.12); border-color:rgba(0,212,255,.6)}
+    .joy-btn{width:64px; height:64px; border-radius:16px; display:grid; place-items:center; border:1px solid rgba(255,255,255,.22); background:linear-gradient(180deg, rgba(255,255,255,.1), rgba(255,255,255,.04)); box-shadow:var(--shadow); touch-action:manipulation; -webkit-tap-highlight-color: transparent}
+    .joy-btn:active{transform:scale(.98); background:rgba(255,255,255,.15); border-color:rgba(255,255,255,.7)}
     .joy-btn svg{opacity:.9}
 
     /* ---------- CATÁLOGO ---------- */
     .catalog-top{display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap}
     .filters{display:flex; gap:8px; flex-wrap:wrap}
-    .chip{padding:8px 12px; border-radius:999px; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.04); cursor:pointer; transition:.2s}
-    .chip.active, .chip:hover{background:rgba(0,212,255,.12); border-color:rgba(0,212,255,.5)}
-    .search{display:flex; gap:8px; align-items:center; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); padding:8px 12px; border-radius:12px}
+    .chip{padding:8px 12px; border-radius:999px; border:1px solid rgba(255,255,255,.15); background:rgba(255,255,255,.06); cursor:pointer; transition:.2s}
+    .chip.active, .chip:hover{background:rgba(255,255,255,.15); border-color:rgba(255,255,255,.6)}
+    .search{display:flex; gap:8px; align-items:center; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.15); padding:8px 12px; border-radius:12px}
     .search input, .select{all:unset; color:var(--fg)}
-    .select{padding:8px 12px; border:1px solid rgba(255,255,255,.12); border-radius:12px; background:rgba(255,255,255,.04)}
+    .select{padding:8px 12px; border:1px solid rgba(255,255,255,.15); border-radius:12px; background:rgba(255,255,255,.06)}
 
     .grid{display:grid; grid-template-columns:repeat(12, 1fr); gap:14px; margin-top:16px}
-    .card{grid-column: span 3; background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02)); border:1px solid rgba(255,255,255,.08); border-radius:18px; overflow:hidden; position:relative; transition:transform .2s ease, box-shadow .2s ease}
+    .card{grid-column: span 3; background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04)); border:1px solid rgba(255,255,255,.12); border-radius:18px; overflow:hidden; position:relative; transition:transform .2s ease, box-shadow .2s ease}
     .card:hover{transform:translateY(-4px); box-shadow:0 20px 40px rgba(0,0,0,.35)}
     .thumb{
       aspect-ratio:4/5; 
-      background: radial-gradient(150% 120% at 80% 10%, rgba(0,212,255,.25), transparent 40%),
+      background: radial-gradient(150% 120% at 80% 10%, rgba(255,255,255,.3), transparent 40%),
                   linear-gradient(135deg, #0a0e14, #0f141b);
       display: flex;
       align-items: center;
@@ -174,19 +176,19 @@
     .title{font-weight:700; margin-bottom: 8px;}
     .meta{display:flex; align-items:center; justify-content:space-between; gap:10px; color:var(--muted); font-size:.95rem}
     .price{font-weight:800; color:var(--fg)}
-    .tag{font-size:.75rem; padding:6px 10px; border-radius:999px; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.04)}
+    .tag{font-size:.75rem; padding:6px 10px; border-radius:999px; border:1px solid rgba(255,255,255,.15); background:rgba(255,255,255,.06)}
     .quick{position:absolute; left:12px; top:12px; display:flex; gap:8px}
     .quick button{
       padding:8px 10px; 
       border-radius:10px; 
-      border:1px solid rgba(255,255,255,.18); 
-      background:rgba(255,255,255,.06); 
+      border:1px solid rgba(255,255,255,.22); 
+      background:rgba(255,255,255,.08); 
       color:var(--fg); 
       cursor:pointer;
       backdrop-filter: blur(10px);
     }
     .quick button:hover {
-      background: rgba(0,212,255,.15);
+      background: rgba(255,255,255,.18);
     }
 
     /* Placeholder para imágenes que no cargan */
@@ -195,17 +197,47 @@
       opacity: .25;
     }
 
+    /* Estilos para los logos de redes sociales */
+    .social-logos {
+      display: flex;
+      gap: 12px;
+      margin-top: 15px;
+    }
+    
+    .social-logo {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+    
+    .social-logo:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+    }
+    
+    .social-logo img {
+      width: 20px;
+      height: 20px;
+      filter: brightness(0) invert(1);
+    }
+
     @media (max-width:1000px){ .card{grid-column: span 4} }
     @media (max-width:700px){ .card{grid-column: span 6} }
 
     /* ---------- CONTACTO ---------- */
     .contact-grid{display:grid; grid-template-columns:1fr 1fr; gap:18px}
-    .contact-card{background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02)); border:1px solid rgba(255,255,255,.08); border-radius:18px; padding:16px}
+    .contact-card{background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04)); border:1px solid rgba(255,255,255,.12); border-radius:18px; padding:16px}
     .field{display:grid; gap:6px; margin-bottom:12px}
     .field input, .field textarea{
-      width:100%; padding:12px 14px; border-radius:12px; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.04); color:var(--fg)
+      width:100%; padding:12px 14px; border-radius:12px; border:1px solid rgba(255,255,255,.15); background:rgba(255,255,255,.06); color:var(--fg)
     }
-    .btn{display:inline-flex; align-items:center; gap:8px; padding:10px 14px; border-radius:12px; border:1px solid rgba(255,255,255,.18); background:linear-gradient(135deg, var(--cyan), var(--cyan-2)); color:#07131a; font-weight:800; cursor:pointer}
+    .btn{display:inline-flex; align-items:center; gap:8px; padding:10px 14px; border-radius:12px; border:1px solid rgba(255,255,255,.22); background:linear-gradient(135deg, #ffffff, #cccccc); color:#000000; font-weight:800; cursor:pointer}
 
     footer{padding:50px 20px; text-align:center; color:var(--muted)}
 
@@ -225,11 +257,11 @@
         top: 100%;
         left: 0;
         right: 0;
-        background: linear-gradient(180deg, rgba(10,11,14,.95), rgba(10,11,14,.85));
+        background: linear-gradient(180deg, rgba(0,0,0,.95), rgba(0,0,0,.85));
         backdrop-filter: saturate(1.1) blur(10px);
         flex-direction: column;
         padding: 20px;
-        border-top: 1px solid rgba(255,255,255,.06);
+        border-top: 1px solid rgba(255,255,255,.1);
         transform: translateY(-100%);
         opacity: 0;
         visibility: hidden;
@@ -269,6 +301,10 @@
       
       .akkua-logo {
         height: 32px;
+      }
+      
+      .social-logos {
+        justify-content: center;
       }
     }
   </style>
@@ -333,7 +369,6 @@
           <span class="pill">Puntaje: <strong id="score">0</strong></span>
           <button id="restart" class="btn" type="button">Reiniciar</button>
           <span class="pill" id="status">Listo 🎮</span>
-        </div>
       </div>
     </div>
   </div>
@@ -381,10 +416,19 @@
           Correo: <a href="mailto:antoine100120@gmail.com">antoine100120@gmail.com</a>
         </p>
         <p style="color:var(--muted)">Síguenos</p>
-        <div style="display:flex; gap:10px">
-          <a class="chip" href="#" aria-label="Instagram">Instagram</a>
-          <a class="chip" href="#" aria-label="Facebook">Facebook</a>
-          <a class="chip" href="#" aria-label="Linkedin">Linkedin</a>
+        <div class="social-logos">
+          <a href="https://www.instagram.com/akkua_net/" class="social-logo" aria-label="Instagram" target="_blank">
+            <img src="https://cdn-icons-png.flaticon.com/512/174/174855.png" alt="Instagram">
+          </a>
+          <a href="https://www.facebook.com/akkua.net.oficial/" class="social-logo" aria-label="Facebook" target="_blank">
+            <img src="https://cdn-icons-png.flaticon.com/512/174/174848.png" alt="Facebook">
+          </a>
+          <a href="https://www.linkedin.com/company/akkua-net/" class="social-logo" aria-label="LinkedIn" target="_blank">
+            <img src="https://cdn-icons-png.flaticon.com/512/174/174857.png" alt="LinkedIn">
+          </a>
+          <a href="https://www.youtube.com/@Akkúa-Net" class="social-logo" aria-label="YouTube" target="_blank">
+            <img src="https://cdn-icons-png.flaticon.com/512/174/174883.png" alt="YouTube">
+          </a>
         </div>
       </div>
       <form id="contactForm" class="contact-card" autocomplete="on">
@@ -524,7 +568,7 @@
       ctx.fillStyle = '#0a0d12';
       ctx.fillRect(0,0,canvas.width, canvas.height);
       ctx.beginPath();
-      ctx.strokeStyle = 'rgba(255,255,255,.04)';
+      ctx.strokeStyle = 'rgba(255,255,255,.06)';
       for(let i=0;i<cells;i++){
         ctx.moveTo(i*grid,0); ctx.lineTo(i*grid, canvas.height);
         ctx.moveTo(0,i*grid); ctx.lineTo(canvas.width, i*grid);
@@ -533,14 +577,14 @@
 
       // comida
       const g = ctx.createRadialGradient(food.x*grid+10, food.y*grid+10, 2, food.x*grid+10, food.y*grid+10, 10);
-      g.addColorStop(0, 'rgba(0,212,255,1)');
-      g.addColorStop(1, 'rgba(0,212,255,.15)');
+      g.addColorStop(0, 'rgba(255,255,255,1)');
+      g.addColorStop(1, 'rgba(255,255,255,.15)');
       ctx.fillStyle = g; ctx.fillRect(food.x*grid, food.y*grid, grid, grid);
 
       // serpiente
       for(let i=0;i<snake.length;i++){
         const s = snake[i];
-        ctx.fillStyle = i===0? '#00D4FF' : 'rgba(0,212,255,.75)';
+        ctx.fillStyle = i===0? '#ffffff' : 'rgba(255,255,255,.75)';
         ctx.fillRect(s.x*grid, s.y*grid, grid-1, grid-1);
       }
     }
@@ -591,7 +635,7 @@
     draw();
   })();
 
-  // ------- CATÁLOGO (mock de productos y UI) -------
+  // ------- CATÁLOGO (solo AKKUA Point, Tinaco, Cisterna y Tanque) -------
   (function(){
     const grid = document.getElementById('grid');
     const filtersWrap = document.getElementById('filters');
@@ -600,20 +644,12 @@
 
     const products = [
       {id:1, name:'AKKUA Point', price:350, tag:'WIP', cat:'En Progreso', image:'https://github.com/Ethern-AI/Akkua-Game-/blob/main/Screenshot%202025-09-02%20185604.png?raw=true'},
-      {id:2, name:'Sudadera Cian Gradient', price:899, tag:'Unisex', cat:'Ropa', image:'https://images.unsplash.com/photo-1556821840-3a63f95609a7?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'},
-      {id:3, name:'Pants Black Flow', price:799, tag:'Hombre', cat:'Ropa', image:'https://images.unsplash.com/photo-1542272604-787c3835535d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'},
-      {id:4, name:'Top Deportivo Wave', price:649, tag:'Mujer', cat:'Ropa', image:'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'},
-      {id:5, name:'Gorra Logo Minimal', price:299, tag:'Unisex', cat:'Accesorios', image:'https://images.unsplash.com/photo-1575428652377-a2d80e2277fc?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'},
-      {id:6, name:'Mochila NeoSplash', price:1099, tag:'Unisex', cat:'Accesorios', image:'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'},
-      {id:7, name:'Botella Térmica 750ml', price:459, tag:'Gear', cat:'Accesorios', image:'https://images.unsplash.com/photo-1602143407151-7111542de6e8?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'},
-      {id:8, name:'Tenis Urban Aqua', price:1599, tag:'Unisex', cat:'Calzado', image:'https://images.unsplash.com/photo-1542291026-7eec264c27ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'},
-      {id:9, name:'Sandalias Drift', price:499, tag:'Unisex', cat:'Calzado', image:'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'},
-      {id:10, name:'Rompevientos Boreal', price:1299, tag:'Unisex', cat:'Ropa', image:'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'},
-      {id:11, name:'Lentes IceShield', price:799, tag:'Gear', cat:'Accesorios', image:'https://images.unsplash.com/photo-1572635196237-14b3f281503f?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'},
-      {id:12, name:'Calcetas Wave Pack (3)', price:249, tag:'Unisex', cat:'Accesorios', image:'https://images.unsplash.com/photo-1588850790165-5d517ead7871?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'}
+      {id:2, name:'Tinaco Rotoplas 1100L', price:899, tag:'Agua', cat:'Almacenamiento', image:'https://www.rotoplas.com/mx/wp-content/uploads/2020/11/Tinaco-1100-lt-horizontal-600x600-1.jpg'},
+      {id:3, name:'Cisterna 10000L', price:12999, tag:'Agua', cat:'Almacenamiento', image:'https://www.rotoplas.com/mx/wp-content/uploads/2020/11/Cisterna-10000-lt-600x600-1.jpg'},
+      {id:4, name:'Tanque Vertical 5000L', price:7599, tag:'Agua', cat:'Almacenamiento', image:'https://www.rotoplas.com/mx/wp-content/uploads/2020/11/Tanque-vertical-5000-lt-600x600-1.jpg'}
     ];
 
-    const categories = ['En Progreso','Ropa','Accesorios','Calzado'];
+    const categories = ['En Progreso','Almacenamiento'];
 
     // chips filtros
     categories.forEach(c=>{
@@ -694,5 +730,3 @@
   </script>
 </body>
 </html>
-
-
