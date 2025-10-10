@@ -1,733 +1,493 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>AKKUA — Tecnología y Juego</title>
-  <meta name="description" content="AKKUA — Juega, explora nuestro catálogo y contáctanos. Experiencia moderna, rápida y pulida." />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <style>
-    :root{
-      --bg:#0b0c0f;            /* negro profundo */
-      --bg-soft:#12141a;       /* negro suave */
-      --fg:#ffffff;            /* blanco */
-      --muted:#b8c0cc;         /* gris claro */
-      --card:#0f1218;
-      --ok:#29cc74;
-      --danger:#ff5a79;
-      --shadow: 0 10px 30px rgba(0,0,0,.35);
-      --radius: 20px;
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;
-      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
-      /* Nuevo fondo negro y blanco con efectos radiales */
-      background: radial-gradient(ellipse at 80% -10%, rgba(255,255,255,0.4), transparent 45%),
-                  radial-gradient(ellipse at -10% 20%, rgba(255,255,255,0.3), transparent 45%),
-                  radial-gradient(ellipse at 50% 100%, rgba(255,255,255,0.2), transparent 60%),
-                  #000000;
-      color:var(--fg);
-      line-height:1.5;
-      scroll-behavior:smooth;
-    }
-    /* ---------- Loader ---------- */
-    #loader{
-      position:fixed; inset:0; background:#000000; display:grid; place-items:center; z-index:9999;
-      transition:opacity .6s ease, visibility .6s ease;
-    }
-    #loader.hidden{opacity:0; visibility:hidden}
-    .spinner{
-      width:72px; height:72px; border-radius:50%; border:4px solid rgba(255,255,255,.12); border-top-color:#ffffff;
-      animation:spin 1s linear infinite; position:relative; box-shadow:0 0 0 6px rgba(255,255,255,.08) inset;
-    }
-    .spinner::after{
-      content:"AKKUA"; position:absolute; inset:auto 0 -28px 0; text-align:center; font-weight:700; font-size:.8rem; color:var(--muted);
-      letter-spacing:.2em;
-    }
-    @keyframes spin{to{transform:rotate(360deg)}}
-
-    /* ---------- Header / Nav ---------- */
-    header{
-      position:sticky; top:0; z-index:50; backdrop-filter:saturate(1.1) blur(10px);
-      background:linear-gradient(180deg, rgba(0,0,0,.9), rgba(0,0,0,.6));
-      border-bottom:1px solid rgba(255,255,255,.1);
-    }
-    .nav{
-      max-width:1200px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:16px; padding:14px 20px;
-      position: relative;
-    }
-    .brand{display:flex; align-items:center; gap:12px; text-decoration:none; color:var(--fg); z-index: 10;}
-    .logo{
-      width:40px; height:40px; border-radius:12px; background: radial-gradient(120% 120% at 30% 20%, #ffffff, #cccccc);
-      display:grid; place-items:center; box-shadow:var(--shadow);
-    }
-    .logo svg{filter:drop-shadow(0 6px 16px rgba(255,255,255,.2))}
-    .brand span{font-weight:800; letter-spacing:.06em}
-    
-    /* Logo AKKUA */
-    .akkua-logo {
-      height: 40px;
-      width: auto;
-    }
-    
-    /* Botón hamburguesa */
-    .menu-toggle {
-      display: none;
-      flex-direction: column;
-      justify-content: space-around;
-      width: 30px;
-      height: 25px;
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      padding: 0;
-      z-index: 10;
-    }
-    
-    .menu-toggle span {
-      width: 100%;
-      height: 3px;
-      background-color: var(--fg);
-      border-radius: 10px;
-      transition: all 0.3s linear;
-      position: relative;
-      transform-origin: center;
-    }
-    
-    nav {
-      display: flex;
-      gap: 8px;
-      transition: transform 0.3s ease-in-out;
-    }
-    nav a{
-      color:var(--muted); text-decoration:none; font-weight:600; padding:10px 14px; border-radius:12px; transition:all .2s ease;
-    }
-    nav a:hover, nav a.active{color:var(--fg); background:rgba(255,255,255,.15)}
-    .cta{background:linear-gradient(135deg, #ffffff, #cccccc); color:#000000 !important;}
-
-    /* ---------- Hero ---------- */
-    .hero{max-width:1200px; margin:24px auto 0; padding:40px 20px 20px; display:grid; grid-template-columns:1.2fr .8fr; gap:26px; align-items:center}
-    .hero h1{font-size:clamp(28px, 3.2vw, 44px); line-height:1.1; margin:0 0 12px; font-weight:800}
-    .hero p{color:var(--muted); margin:0 0 22px}
-    .badges{display:flex; gap:10px; flex-wrap:wrap; margin:-6px 0 20px}
-    .badge{font-size:.8rem; padding:8px 12px; border-radius:999px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.12)}
-    .panel{
-      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
-      border:1px solid rgba(255,255,255,.12); border-radius:var(--radius); box-shadow:var(--shadow); padding:18px;
-    }
-
-    /* ---------- Sections container ---------- */
-    section{max-width:1200px; margin:0 auto; padding:60px 20px}
-    section h2{font-size:clamp(22px, 2.4vw, 32px); margin:0 0 14px; font-weight:800}
-    .section-sub{color:var(--muted); margin:0 0 24px}
-
-    /* ---------- JUGAR (Snake) ---------- */
-    .game-wrap{display:grid; grid-template-columns:1fr; gap:16px}
-    .game-ui{display:flex; align-items:center; gap:12px; flex-wrap:wrap}
-    .pill{padding:8px 12px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.12); border-radius:12px}
-    .controls{display:flex; gap:8px; align-items:center}
-    .key{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-weight:700; font-size:.9rem; padding:8px 10px; border-radius:10px; border:1px solid rgba(255,255,255,.18); background:rgba(255,255,255,.06)}
-
-    .game-area{display:grid; grid-template-columns:1fr; gap:14px}
-    canvas#board{width:100%; max-width:520px; aspect-ratio:1/1; border-radius:18px; background:radial-gradient(600px 400px at 10% 0%, rgba(255,255,255,.12), transparent 60%), #0a0d12; border:1px solid rgba(255,255,255,.12); box-shadow:var(--shadow)}
-
-    /* Joystick */
-    .joystick{display:none; gap:10px; user-select:none}
-    .joy-row{display:flex; justify-content:center; gap:10px}
-    .joy-btn{width:64px; height:64px; border-radius:16px; display:grid; place-items:center; border:1px solid rgba(255,255,255,.22); background:linear-gradient(180deg, rgba(255,255,255,.1), rgba(255,255,255,.04)); box-shadow:var(--shadow); touch-action:manipulation; -webkit-tap-highlight-color: transparent}
-    .joy-btn:active{transform:scale(.98); background:rgba(255,255,255,.15); border-color:rgba(255,255,255,.7)}
-    .joy-btn svg{opacity:.9}
-
-    /* ---------- CATÁLOGO ---------- */
-    .catalog-top{display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap}
-    .filters{display:flex; gap:8px; flex-wrap:wrap}
-    .chip{padding:8px 12px; border-radius:999px; border:1px solid rgba(255,255,255,.15); background:rgba(255,255,255,.06); cursor:pointer; transition:.2s}
-    .chip.active, .chip:hover{background:rgba(255,255,255,.15); border-color:rgba(255,255,255,.6)}
-    .search{display:flex; gap:8px; align-items:center; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.15); padding:8px 12px; border-radius:12px}
-    .search input, .select{all:unset; color:var(--fg)}
-    .select{padding:8px 12px; border:1px solid rgba(255,255,255,.15); border-radius:12px; background:rgba(255,255,255,.06)}
-
-    .grid{display:grid; grid-template-columns:repeat(12, 1fr); gap:14px; margin-top:16px}
-    .card{grid-column: span 3; background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04)); border:1px solid rgba(255,255,255,.12); border-radius:18px; overflow:hidden; position:relative; transition:transform .2s ease, box-shadow .2s ease}
-    .card:hover{transform:translateY(-4px); box-shadow:0 20px 40px rgba(0,0,0,.35)}
-    .thumb{
-      aspect-ratio:4/5; 
-      background: radial-gradient(150% 120% at 80% 10%, rgba(255,255,255,.3), transparent 40%),
-                  linear-gradient(135deg, #0a0e14, #0f141b);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-    }
-    .thumb img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform 0.3s ease;
-    }
-    .card:hover .thumb img {
-      transform: scale(1.05);
-    }
-    .info{padding:12px 14px 14px}
-    .title{font-weight:700; margin-bottom: 8px;}
-    .meta{display:flex; align-items:center; justify-content:space-between; gap:10px; color:var(--muted); font-size:.95rem}
-    .price{font-weight:800; color:var(--fg)}
-    .tag{font-size:.75rem; padding:6px 10px; border-radius:999px; border:1px solid rgba(255,255,255,.15); background:rgba(255,255,255,.06)}
-    .quick{position:absolute; left:12px; top:12px; display:flex; gap:8px}
-    .quick button{
-      padding:8px 10px; 
-      border-radius:10px; 
-      border:1px solid rgba(255,255,255,.22); 
-      background:rgba(255,255,255,.08); 
-      color:var(--fg); 
-      cursor:pointer;
-      backdrop-filter: blur(10px);
-    }
-    .quick button:hover {
-      background: rgba(255,255,255,.18);
-    }
-
-    /* Placeholder para imágenes que no cargan */
-    .thumb .placeholder {
-      font-size: 2.4rem;
-      opacity: .25;
-    }
-
-    /* Estilos para los logos de redes sociales */
-    .social-logos {
-      display: flex;
-      gap: 12px;
-      margin-top: 15px;
-    }
-    
-    .social-logo {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(255, 255, 255, 0.1);
-      transition: all 0.3s ease;
-      border: 1px solid rgba(255, 255, 255, 0.15);
-    }
-    
-    .social-logo:hover {
-      background: rgba(255, 255, 255, 0.2);
-      transform: translateY(-2px);
-    }
-    
-    .social-logo img {
-      width: 20px;
-      height: 20px;
-      filter: brightness(0) invert(1);
-    }
-
-    @media (max-width:1000px){ .card{grid-column: span 4} }
-    @media (max-width:700px){ .card{grid-column: span 6} }
-
-    /* ---------- CONTACTO ---------- */
-    .contact-grid{display:grid; grid-template-columns:1fr 1fr; gap:18px}
-    .contact-card{background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04)); border:1px solid rgba(255,255,255,.12); border-radius:18px; padding:16px}
-    .field{display:grid; gap:6px; margin-bottom:12px}
-    .field input, .field textarea{
-      width:100%; padding:12px 14px; border-radius:12px; border:1px solid rgba(255,255,255,.15); background:rgba(255,255,255,.06); color:var(--fg)
-    }
-    .btn{display:inline-flex; align-items:center; gap:8px; padding:10px 14px; border-radius:12px; border:1px solid rgba(255,255,255,.22); background:linear-gradient(135deg, #ffffff, #cccccc); color:#000000; font-weight:800; cursor:pointer}
-
-    footer{padding:50px 20px; text-align:center; color:var(--muted)}
-
-    /* Media queries para diseño responsive */
-    @media (max-width: 860px){
-      .hero{grid-template-columns:1fr;}
-      .joystick{display:grid; padding-top:8px}
-      .hero .panel{order:-1}
-      
-      /* Menú responsivo */
-      .menu-toggle {
-        display: flex;
-      }
-      
-      nav {
-        position: absolute;
-        top: 100%;
-        left: 0;
-        right: 0;
-        background: linear-gradient(180deg, rgba(0,0,0,.95), rgba(0,0,0,.85));
-        backdrop-filter: saturate(1.1) blur(10px);
-        flex-direction: column;
-        padding: 20px;
-        border-top: 1px solid rgba(255,255,255,.1);
-        transform: translateY(-100%);
-        opacity: 0;
-        visibility: hidden;
-        transition: all 0.3s ease-in-out;
-      }
-      
-      nav.active {
-        transform: translateY(0);
-        opacity: 1;
-        visibility: visible;
-      }
-      
-      nav a {
-        width: 100%;
-        text-align: center;
-        margin: 5px 0;
-      }
-      
-      /* Animación del botón hamburguesa */
-      .menu-toggle.active span:nth-child(1) {
-        transform: rotate(45deg) translate(5px, 5px);
-      }
-      
-      .menu-toggle.active span:nth-child(2) {
-        opacity: 0;
-      }
-      
-      .menu-toggle.active span:nth-child(3) {
-        transform: rotate(-45deg) translate(7px, -6px);
-      }
-    }
-
-    @media (max-width: 768px) {
-      .contact-grid {
-        grid-template-columns: 1fr;
-      }
-      
-      .akkua-logo {
-        height: 32px;
-      }
-      
-      .social-logos {
-        justify-content: center;
-      }
-    }
-  </style>
-</head>
-<body>
-  <!-- Loader -->
-  <div id="loader" role="progressbar" aria-label="Cargando">
-    <div class="spinner" aria-hidden="true"></div>
-  </div>
-
-  <!-- Header -->
-  <header>
-    <div class="nav">
-      <a href="#top" class="brand">
-        <img src="https://raw.githubusercontent.com/Ethern-AI/GAME/main/AKKUALOGO.png" alt="AKKUA Logo" class="akkua-logo">
-      </a>
-      
-      <button class="menu-toggle" aria-label="Abrir menú">
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-      
-      <nav>
-        <a href="#jugar">Jugar</a>
-        <a href="#catalogo">Catálogo</a>
-        <a href="#contacto" class="cta">Contacto</a>
-      </nav>
-    </div>
-  </header>
-
-  <!-- Hero / Intro -->
-  <div id="top" class="hero">
-    <div>
-      <h1>Bienvenido a AKKUA.</h1>
-      <p class="section-sub">Integramos soluciones de eficiencia de recursos para que puedas aprovechar cada  <strong>gota de recurso</strong>. Juega esto que diseñamos para ti y explora lo que tenmos para ofrecerte.</p>
-      <div class="badges">
-        <span class="badge">⚡ Eficiente</span>
-        <span class="badge">🧊 Duradero</span>
-        <span class="badge">🌊  AKKUA</span>
-      </div>
-      <div class="controls">
-        <span class="pill">Teclado: <span class="key">⬅</span> <span class="key">⬆</span> <span class="key">⬇</span> <span class="key">➡</span></span>
-        <span class="pill">Móvil: Joystick táctil</span>
-      </div>
-    </div>
-    <div class="panel">
-      <div class="game-area">
-        <canvas id="board" width="520" height="520" aria-label="Tablero del juego"></canvas>
-        <!-- Joystick (visible en móvil) -->
-        <div class="joystick" id="joystick" aria-label="Joystick">
-          <div class="joy-row">
-            <button class="joy-btn" data-dir="up" aria-label="Arriba">⬆</button>
-          </div>
-          <div class="joy-row">
-            <button class="joy-btn" data-dir="left" aria-label="Izquierda">⬅</button>
-            <button class="joy-btn" data-dir="down" aria-label="Abajo">⬇</button>
-            <button class="joy-btn" data-dir="right" aria-label="Derecha">➡</button>
-          </div>
-        </div>
-        <div class="game-ui">
-          <span class="pill">Puntaje: <strong id="score">0</strong></span>
-          <button id="restart" class="btn" type="button">Reiniciar</button>
-          <span class="pill" id="status">Listo 🎮</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- JUGAR -->
-  <section id="jugar" aria-labelledby="jugar-title">
-    <h2 id="jugar-title">AKKUA</h2>
-    <p class="section-sub">Puntaje máximo: <strong id="high-score">0</strong></p>
-  </section>
-
-  <!-- CATÁLOGO -->
-  <section id="catalogo" aria-labelledby="catalogo-title">
-    <h2 id="catalogo-title">Catálogo</h2>
-    <p class="section-sub">Conoce todos los productos y servicios que tenemos para ofrecerte: servicios para eficientizar el uso de recursos ambientales, dispensadora.</p>
-
-    <div class="catalog-top">
-      <div class="filters" id="filters"></div>
-      <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap">
-        <div class="search">
-          🔎 <input id="q" placeholder="Buscar producto..." aria-label="Buscar" />
-        </div>
-        <select id="sort" class="select" aria-label="Ordenar">
-          <option value="featured">Destacados</option>
-          <option value="price-asc">Precio: menor a mayor</option>
-          <option value="price-desc">Precio: mayor a menor</option>
-          <option value="name-asc">Nombre A–Z</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="grid" id="grid" aria-live="polite"></div>
-  </section>
-
-  <!-- CONTACTO -->
-  <section id="contacto" aria-labelledby="contacto-title">
-    <h2 id="contacto-title">Contacto</h2>
-    <p class="section-sub">¿Tienes una idea, cotización o colaboración? Escríbenos.</p>
-    <div class="contact-grid">
-      <div class="contact-card">
-        <h3 style="margin-top:0">Información</h3>
-        <p>
-          <strong>AKKUA</strong><br/>
-          Monterrey, NL, México<br/>
-          Tel: <a href="tel:+528123836266">+52 81 23836266</a><br/>
-          Correo: <a href="mailto:antoine100120@gmail.com">antoine100120@gmail.com</a>
-        </p>
-        <p style="color:var(--muted)">Síguenos</p>
-        <div class="social-logos">
-          <a href="https://www.instagram.com/akkua_net/" class="social-logo" aria-label="Instagram" target="_blank">
-            <img src="https://cdn-icons-png.flaticon.com/512/174/174855.png" alt="Instagram">
-          </a>
-          <a href="https://www.facebook.com/akkua.net.oficial/" class="social-logo" aria-label="Facebook" target="_blank">
-            <img src="https://cdn-icons-png.flaticon.com/512/174/174848.png" alt="Facebook">
-          </a>
-          <a href="https://www.linkedin.com/company/akkua-net/" class="social-logo" aria-label="LinkedIn" target="_blank">
-            <img src="https://cdn-icons-png.flaticon.com/512/174/174857.png" alt="LinkedIn">
-          </a>
-          <a href="https://www.youtube.com/@Akkúa-Net" class="social-logo" aria-label="YouTube" target="_blank">
-            <img src="https://cdn-icons-png.flaticon.com/512/174/174883.png" alt="YouTube">
-          </a>
-        </div>
-      </div>
-      <form id="contactForm" class="contact-card" autocomplete="on">
-        <h3 style="margin-top:0">Escríbenos</h3>
-        <div class="field">
-          <label for="name">Nombre</label>
-          <input id="name" name="name" placeholder="Tu nombre" required />
-        </div>
-        <div class="field">
-          <label for="email">Correo</label>
-          <input id="email" name="email" type="email" placeholder="antoine100120@gmail.com" required />
-        </div>
-        <div class="field">
-          <label for="msg">Mensaje</label>
-          <textarea id="msg" name="msg" rows="5" placeholder="Cuéntanos en qué podemos ayudarte" required></textarea>
-        </div>
-        <button class="btn" type="submit">Enviar email</button>
-        <p id="formStatus" class="section-sub" style="margin:10px 0 0"></p>
-      </form>
-    </div>
-  </section>
-
-  <footer>© <span id="year"></span> AKKUA. Todos los derechos reservados.</footer>
-
-  <script>
-  // ------- Loader -------
-  window.addEventListener('load', () => {
-    setTimeout(()=>document.getElementById('loader').classList.add('hidden'), 350);
-  });
-
-  // ------- Menú móvil -------
-  const menuToggle = document.querySelector('.menu-toggle');
-  const nav = document.querySelector('nav');
-  
-  menuToggle.addEventListener('click', () => {
-    menuToggle.classList.toggle('active');
-    nav.classList.toggle('active');
-  });
-  
-  // Cerrar menú al hacer clic en un enlace
-  document.querySelectorAll('nav a').forEach(link => {
-    link.addEventListener('click', () => {
-      menuToggle.classList.remove('active');
-      nav.classList.remove('active');
-    });
-  });
-
-  // ------- Nav Active -------
-  const links = document.querySelectorAll('header nav a');
-  const sections = ['jugar','catalogo','contacto'].map(id=>document.getElementById(id));
-  const io = new IntersectionObserver(entries => {
-    entries.forEach(e=>{
-      const id = e.target.id;
-      const link = Array.from(links).find(a=>a.getAttribute('href') === '#' + id);
-      if(e.isIntersecting){ links.forEach(a=>a.classList.remove('active')); if(link) link.classList.add('active'); }
-    });
-  }, {rootMargin:'-55% 0px -40% 0px', threshold:.01});
-  sections.forEach(s=>io.observe(s));
-
-  // ------- SNAKE GAME -------
-  (function(){
-    const canvas = document.getElementById('board');
-    const ctx = canvas.getContext('2d');
-    const scoreEl = document.getElementById('score');
-    const highScoreEl = document.getElementById('high-score');
-    const statusEl = document.getElementById('status');
-    const restartBtn = document.getElementById('restart');
-    const joystick = document.getElementById('joystick');
-
-    const grid = 20; // tamaño de celda
-    const cells = canvas.width / grid; // asume cuadrado
-
-    let snake, dir, food, speed, running, tick, last;
-    let highScore = localStorage.getItem('snakeHighScore') || 0;
-    highScoreEl.textContent = highScore;
-
-    function init(){
-      snake = [{x:10, y:10}];
-      dir = {x:1, y:0};
-      speed = 110; // ms
-      running = true;
-      scoreEl.textContent = '0';
-      statusEl.textContent = 'Jugando';
-      placeFood();
-      last = 0; requestAnimationFrame(loop);
-    }
-
-    function placeFood(){
-      food = {x: Math.floor(Math.random()*cells), y: Math.floor(Math.random()*cells)};
-      // evita aparecer dentro de la serpiente
-      while(snake.some(s => s.x===food.x && s.y===food.y)){
-        food = {x: Math.floor(Math.random()*cells), y: Math.floor(Math.random()*cells)};
-      }
-    }
-
-    function loop(ts){
-      if(!running) return;
-      if(!last) last = ts;
-      if(ts - last > speed){
-        last = ts; step(); draw();
-      }
-      requestAnimationFrame(loop);
-    }
-
-    function step(){
-      const head = {x: snake[0].x + dir.x, y: snake[0].y + dir.y};
-      // colisión con paredes
-      if(head.x < 0 || head.y < 0 || head.x >= cells || head.y >= cells){
-        return gameOver('Golpeaste la pared');
-      }
-      // colisión con cuerpo
-      if(snake.some(s => s.x===head.x && s.y===head.y)){
-        return gameOver('Te mordiste la cola');
-      }
-      snake.unshift(head);
-      // comer
-      if(head.x === food.x && head.y === food.y){
-        const n = parseInt(scoreEl.textContent,10) + 1; 
-        scoreEl.textContent = String(n);
-        
-        // Actualizar puntaje máximo si es necesario
-        if (n > highScore) {
-          highScore = n;
-          highScoreEl.textContent = highScore;
-          localStorage.setItem('snakeHighScore', highScore);
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ethernai - We don't predict the future, we build it</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --matrix-green: #00ff41;
+            --dark-bg: #0a0a0a;
         }
         
-        speed = Math.max(50, speed - 3);
-        placeFood();
-      } else {
-        snake.pop();
-      }
-    }
+        body {
+            font-family: 'Share Tech Mono', monospace;
+            background-color: var(--dark-bg);
+            color: white;
+            overflow-x: hidden;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Orbitron', sans-serif;
+        }
+        
+        .matrix-text {
+            color: var(--matrix-green);
+            text-shadow: 0 0 5px var(--matrix-green);
+        }
+        
+        .matrix-border {
+            border: 1px solid var(--matrix-green);
+            box-shadow: 0 0 10px var(--matrix-green);
+        }
+        
+        .matrix-glow {
+            text-shadow: 0 0 5px var(--matrix-green), 0 0 10px var(--matrix-green);
+        }
+        
+        .preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--dark-bg);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+        
+        .preloader-counter {
+            font-size: 4rem;
+            font-weight: bold;
+            margin-bottom: 2rem;
+            color: var(--matrix-green);
+        }
+        
+        .slogan {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 1s ease;
+            font-size: 1.5rem;
+            text-align: center;
+        }
+        
+        .slogan.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .hero-video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
+        
+        .hero-overlay {
+            background: rgba(10, 10, 10, 0.7);
+            backdrop-filter: blur(5px);
+        }
+        
+        .card-container {
+            perspective: 1000px;
+        }
+        
+        .card {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            transform-style: preserve-3d;
+            transition: transform 0.8s;
+        }
+        
+        .card:hover {
+            transform: rotateY(180deg);
+        }
+        
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            border-radius: 10px;
+        }
+        
+        .card-front {
+            background-color: rgba(0, 255, 65, 0.1);
+            border: 1px solid var(--matrix-green);
+        }
+        
+        .card-back {
+            background-color: rgba(10, 10, 10, 0.9);
+            border: 1px solid var(--matrix-green);
+            transform: rotateY(180deg);
+            text-align: center;
+        }
+        
+        .sector-card {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .sector-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 20px var(--matrix-green);
+        }
+        
+        .sector-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 65, 0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .sector-card:hover::before {
+            left: 100%;
+        }
+        
+        .cursor-glow {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--matrix-green);
+            pointer-events: none;
+            mix-blend-mode: screen;
+            z-index: 9999;
+            opacity: 0.5;
+            transition: transform 0.1s;
+        }
+        
+        .form-input {
+            background-color: rgba(10, 10, 10, 0.7);
+            border: 1px solid #333;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .form-input:focus {
+            border-color: var(--matrix-green);
+            box-shadow: 0 0 10px var(--matrix-green);
+            outline: none;
+        }
+        
+        .btn-matrix {
+            background-color: transparent;
+            border: 1px solid var(--matrix-green);
+            color: var(--matrix-green);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-matrix:hover {
+            background-color: var(--matrix-green);
+            color: var(--dark-bg);
+            box-shadow: 0 0 15px var(--matrix-green);
+        }
+        
+        @media (max-width: 768px) {
+            .cursor-glow {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body class="bg-black text-white">
+    <!-- Preloader -->
+    <div id="preloader" class="preloader">
+        <div id="counter" class="preloader-counter">0%</div>
+        <div id="slogan" class="slogan">We don't predict the future, we build it.</div>
+    </div>
 
-    function draw(){
-      // fondo cuadriculado sutil
-      ctx.fillStyle = '#0a0d12';
-      ctx.fillRect(0,0,canvas.width, canvas.height);
-      ctx.beginPath();
-      ctx.strokeStyle = 'rgba(255,255,255,.06)';
-      for(let i=0;i<cells;i++){
-        ctx.moveTo(i*grid,0); ctx.lineTo(i*grid, canvas.height);
-        ctx.moveTo(0,i*grid); ctx.lineTo(canvas.width, i*grid);
-      }
-      ctx.stroke();
+    <!-- Cursor Glow Effect -->
+    <div id="cursor-glow" class="cursor-glow"></div>
 
-      // comida
-      const g = ctx.createRadialGradient(food.x*grid+10, food.y*grid+10, 2, food.x*grid+10, food.y*grid+10, 10);
-      g.addColorStop(0, 'rgba(255,255,255,1)');
-      g.addColorStop(1, 'rgba(255,255,255,.15)');
-      ctx.fillStyle = g; ctx.fillRect(food.x*grid, food.y*grid, grid, grid);
-
-      // serpiente
-      for(let i=0;i<snake.length;i++){
-        const s = snake[i];
-        ctx.fillStyle = i===0? '#ffffff' : 'rgba(255,255,255,.75)';
-        ctx.fillRect(s.x*grid, s.y*grid, grid-1, grid-1);
-      }
-    }
-
-    function gameOver(reason){
-      running = false; statusEl.textContent = 'Game Over — ' + reason;
-    }
-
-    // teclado
-    window.addEventListener('keydown', e => {
-      const k = e.key;
-      if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','w','a','s','d'].includes(k)){
-        e.preventDefault();
-      }
-      if((k==='ArrowUp' || k==='w') && dir.y!==1) dir={x:0,y:-1};
-      else if((k==='ArrowDown' || k==='s') && dir.y!==-1) dir={x:0,y:1};
-      else if((k==='ArrowLeft' || k==='a') && dir.x!==1) dir={x:-1,y:0};
-      else if((k==='ArrowRight' || k==='d') && dir.x!==-1) dir={x:1,y:0};
-    }, {passive:false});
-
-    // joystick móvil
-    function bindJoy(btn){
-      const dirMap = {up:{x:0,y:-1}, down:{x:0,y:1}, left:{x:-1,y:0}, right:{x:1,y:0}};
-      const d = dirMap[btn.dataset.dir];
-      btn.addEventListener('touchstart', (e)=>{ e.preventDefault(); setDir(d); }, {passive:false});
-      btn.addEventListener('click', ()=> setDir(d));
-    }
-    function setDir(d){
-      // impedir giro 180° instantáneo
-      if((d.x === 0 && d.y === -1 && dir.y!==1) ||
-         (d.x === 0 && d.y ===  1 && dir.y!==-1) ||
-         (d.x === -1 && d.y === 0 && dir.x!==1) ||
-         (d.x ===  1 && d.y === 0 && dir.x!==-1)){
-        dir = d;
-      }
-    }
-    Array.from(joystick.querySelectorAll('.joy-btn')).forEach(bindJoy);
-
-    // mostrar joystick en pantallas pequeñas
-    const mq = window.matchMedia('(max-width: 860px)');
-    function onMQ(){ joystick.style.display = mq.matches ? 'grid' : 'none'; }
-    mq.addEventListener('change', onMQ); onMQ();
-
-    restartBtn.addEventListener('click', () => init());
-
-    // iniciar
-    init();
-    draw();
-  })();
-
-  // ------- CATÁLOGO (solo AKKUA Point, Tinaco, Cisterna y Tanque) -------
-  (function(){
-    const grid = document.getElementById('grid');
-    const filtersWrap = document.getElementById('filters');
-    const q = document.getElementById('q');
-    const sort = document.getElementById('sort');
-
-    const products = [
-      {id:1, name:'AKKUA Point', price:350, tag:'WIP', cat:'En Progreso', image:'https://github.com/Ethern-AI/Akkua-Game-/blob/main/Screenshot%202025-09-02%20185604.png?raw=true'},
-      {id:2, name:'Tinaco Rotoplas 1100L', price:3500, tag:'Agua', cat:'Almacenamiento', image:'https://github.com/Ethern-AI/Akkua-Game-/blob/main/1100rot.webp?raw=true'},
-      {id:3, name:'Cisterna 2800L', price:8500, tag:'Agua', cat:'Almacenamiento', image:'https://github.com/Ethern-AI/Akkua-Game-/blob/main/cisterna1200.webp?raw=true'},
-      {id:4, name:'Tanques de almacenamiento', price:7599, tag:'Agua', cat:'Almacenamiento', image:'https://github.com/Ethern-AI/Akkua-Game-/blob/main/tanques.jpeg?raw=true'}
-    ];
-
-    const categories = ['En Progreso','Almacenamiento'];
-
-    // chips filtros
-    categories.forEach(c=>{
-      const b = document.createElement('button');
-      b.className = 'chip'; b.textContent = c; b.dataset.cat = c;
-      if(c==='Todos') b.classList.add('active');
-      b.addEventListener('click', ()=>{
-        document.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));
-        b.classList.add('active'); render();
-      });
-      filtersWrap.appendChild(b);
-    });
-
-    q.addEventListener('input', render);
-    sort.addEventListener('change', render);
-
-    function render(){
-      const active = document.querySelector('.chip.active')?.dataset.cat || 'Todos';
-      const term = q.value.trim().toLowerCase();
-      let list = products.filter(p => (active==='Todos' || p.cat===active) && (!term || p.name.toLowerCase().includes(term)));
-      switch(sort.value){
-        case 'price-asc': list.sort((a,b)=>a.price-b.price); break;
-        case 'price-desc': list.sort((a,b)=>b.price-a.price); break;
-        case 'name-asc': list.sort((a,b)=>a.name.localeCompare(b.name)); break;
-        default: break; // featured
-      }
-      grid.innerHTML = '';
-      list.forEach(p=> grid.appendChild(card(p)));
-    }
-
-    function card(p){
-      const el = document.createElement('article'); 
-      el.className = 'card'; 
-      el.setAttribute('tabindex','0');
-      
-      el.innerHTML = `
-        <div class="quick">
-          <button title="Favorito">♡</button>
-          <button title="Vista rápida">👁</button>
+    <!-- Header -->
+    <header class="fixed w-full z-50 bg-black/80 backdrop-blur-sm">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="text-2xl font-bold matrix-text">ETHERNAI</div>
+            <nav class="hidden md:flex space-x-6">
+                <a href="#hero" class="hover:matrix-text transition-colors">Inicio</a>
+                <a href="#services" class="hover:matrix-text transition-colors">Servicios</a>
+                <a href="#sectors" class="hover:matrix-text transition-colors">Sectores</a>
+                <a href="#contact" class="hover:matrix-text transition-colors">Contacto</a>
+            </nav>
+            <button class="md:hidden matrix-text">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
         </div>
-        <div class="thumb">
-          <img src="${p.image}" alt="${p.name}" onerror="this.style.display='none'; this.parentNode.innerHTML='<span class=\'placeholder\'>${p.emoji || '🛒'}</span>';">
+    </header>
+
+    <!-- Hero Section -->
+    <section id="hero" class="relative h-screen flex items-center justify-center overflow-hidden">
+        <video class="hero-video" autoplay muted loop>
+            <source src="https://github.com/Ethern-AI/Akkua-Game-/raw/refs/heads/main/Creaci%C3%B3n_de_Video_Animado_para_EthernAI%20(1).mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        <div class="hero-overlay absolute inset-0"></div>
+        <div class="relative z-10 text-center px-4">
+            <h1 class="text-4xl md:text-6xl font-bold mb-6 matrix-glow">QUIENES SOMOS</h1>
+            <p class="text-xl md:text-2xl max-w-3xl mx-auto">
+                En Ethernai, somos pioneros en soluciones tecnológicas avanzadas que transforman industrias y redefinen el futuro digital. Nuestro equipo de expertos combina inteligencia artificial, blockchain y realidad extendida para crear experiencias innovadoras.
+            </p>
         </div>
-        <div class="info">
-          <div class="title">${p.name}</div>
-          <div class="meta">
-            <span class="tag">${p.cat}</span>
-            <span class="price">$${p.price}</span>
-          </div>
-        </div>`;
-      
-      return el;
-    }
+    </section>
 
-    render();
-  })();
+    <!-- Services Section -->
+    <section id="services" class="py-20 px-4">
+        <div class="container mx-auto">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-16 matrix-text">NUESTROS SERVICIOS</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <!-- B2B Card -->
+                <div class="card-container">
+                    <div class="card">
+                        <div class="card-front">
+                            <h3 class="text-2xl font-bold matrix-text mb-4">BUSINESS TO BUSINESS</h3>
+                            <p class="text-center">Soluciones empresariales de vanguardia</p>
+                        </div>
+                        <div class="card-back">
+                            <h3 class="text-2xl font-bold matrix-text mb-4">B2B</h3>
+                            <p class="mb-4">Desarrollamos soluciones tecnológicas personalizadas para empresas que buscan optimizar procesos, aumentar eficiencia y obtener ventajas competitivas.</p>
+                            <ul class="text-left list-disc pl-5">
+                                <li>Plataformas empresariales en la nube</li>
+                                <li>Automatización de procesos con IA</li>
+                                <li>Soluciones de cadena de suministro</li>
+                                <li>Análisis predictivo de datos</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- B2C Card -->
+                <div class="card-container">
+                    <div class="card">
+                        <div class="card-front">
+                            <h3 class="text-2xl font-bold matrix-text mb-4">BUSINESS TO CLIENT</h3>
+                            <p class="text-center">Experiencias digitales innovadoras</p>
+                        </div>
+                        <div class="card-back">
+                            <h3 class="text-2xl font-bold matrix-text mb-4">B2C</h3>
+                            <p class="mb-4">Creamos experiencias digitales envolventes que conectan marcas con consumidores a través de interfaces intuitivas y tecnologías emergentes.</p>
+                            <ul class="text-left list-disc pl-5">
+                                <li>Aplicaciones móviles inmersivas</li>
+                                <li>Plataformas de comercio electrónico</li>
+                                <li>Experiencias de realidad aumentada</li>
+                                <li>Asistentes virtuales personalizados</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-  // ------- CONTACTO (mailto handler) -------
-  (function(){
-    const form = document.getElementById('contactForm');
-    const status = document.getElementById('formStatus');
-    const to = 'contacto@akkua.mx'; // ⇦ cambia este correo por el oficial
-    form.addEventListener('submit', e => {
-      e.preventDefault();
-      const name = document.getElementById('name').value.trim();
-      const email = document.getElementById('email').value.trim();
-      const msg = document.getElementById('msg').value.trim();
-      const subject = encodeURIComponent('Contacto desde sitio AKKUA — ' + name);
-      const body = encodeURIComponent(`Nombre: ${name}\nCorreo: ${email}\n\nMensaje:\n${msg}`);
-      const mailto = `mailto:${to}?subject=${subject}&body=${body}`;
-      window.location.href = mailto;
-      status.textContent = 'Abriendo tu gestor de correo…';
-    });
-  })();
+    <!-- Sectors Section -->
+    <section id="sectors" class="py-20 px-4 bg-gray-900/50">
+        <div class="container mx-auto">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-16 matrix-text">SECTORES</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Sector Cards -->
+                <div class="sector-card matrix-border p-6 rounded-lg">
+                    <div class="text-2xl font-bold matrix-text mb-4">MARKETING</div>
+                    <p>Plataformas de análisis predictivo y automatización de campañas con IA para maximizar ROI.</p>
+                </div>
+                <div class="sector-card matrix-border p-6 rounded-lg">
+                    <div class="text-2xl font-bold matrix-text mb-4">SERVICIO AL CLIENTE</div>
+                    <p>Asistentes virtuales avanzados y sistemas de gestión de relaciones con machine learning.</p>
+                </div>
+                <div class="sector-card matrix-border p-6 rounded-lg">
+                    <div class="text-2xl font-bold matrix-text mb-4">RESTAURANTERO</div>
+                    <p>Sistemas de gestión integral con realidad aumentada para menús y experiencias personalizadas.</p>
+                </div>
+                <div class="sector-card matrix-border p-6 rounded-lg">
+                    <div class="text-2xl font-bold matrix-text mb-4">LEGAL</div>
+                    <p>Plataformas de análisis documental con IA y sistemas de gestión de casos automatizados.</p>
+                </div>
+                <div class="sector-card matrix-border p-6 rounded-lg">
+                    <div class="text-2xl font-bold matrix-text mb-4">FINANCIERO</div>
+                    <p>Sistemas de trading algorítmico, análisis de riesgo y plataformas blockchain seguras.</p>
+                </div>
+                <div class="sector-card matrix-border p-6 rounded-lg">
+                    <div class="text-2xl font-bold matrix-text mb-4">SALUD</div>
+                    <p>Diagnóstico asistido por IA, telemedicina avanzada y gestión de datos médicos seguros.</p>
+                </div>
+            </div>
+        </div>
+    </section>
 
-  // ------- Misc -------
-  document.getElementById('year').textContent = new Date().getFullYear();
-  </script>
+    <!-- Contact Section -->
+    <section id="contact" class="py-20 px-4">
+        <div class="container mx-auto max-w-4xl">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-16 matrix-text">CONTACTO</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <div>
+                    <h3 class="text-2xl font-bold mb-6 matrix-text">INFORMACIÓN DE CONTACTO</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-start">
+                            <div class="matrix-text mr-3">📍</div>
+                            <div>
+                                <p class="font-bold">Dirección</p>
+                                <p>Avenida Tecnológica 123,</p>
+                                <p>Distrito Digital, CP 28080</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="matrix-text mr-3">📞</div>
+                            <div>
+                                <p class="font-bold">Teléfono</p>
+                                <p>+34 912 345 678</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="matrix-text mr-3">✉️</div>
+                            <div>
+                                <p class="font-bold">Email</p>
+                                <p>info@ethernai.com</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-8">
+                        <h4 class="text-xl font-bold mb-4 matrix-text">SÍGUENOS</h4>
+                        <div class="flex space-x-4">
+                            <a href="#" class="matrix-text hover:scale-110 transition-transform">LinkedIn</a>
+                            <a href="#" class="matrix-text hover:scale-110 transition-transform">Twitter</a>
+                            <a href="#" class="matrix-text hover:scale-110 transition-transform">GitHub</a>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <form id="contact-form" class="space-y-6">
+                        <div>
+                            <label for="name" class="block mb-2 matrix-text">Nombre</label>
+                            <input type="text" id="name" name="name" class="w-full p-3 form-input rounded" required>
+                        </div>
+                        <div>
+                            <label for="email" class="block mb-2 matrix-text">Email</label>
+                            <input type="email" id="email" name="email" class="w-full p-3 form-input rounded" required>
+                        </div>
+                        <div>
+                            <label for="subject" class="block mb-2 matrix-text">Asunto</label>
+                            <input type="text" id="subject" name="subject" class="w-full p-3 form-input rounded" required>
+                        </div>
+                        <div>
+                            <label for="message" class="block mb-2 matrix-text">Mensaje</label>
+                            <textarea id="message" name="message" rows="5" class="w-full p-3 form-input rounded" required></textarea>
+                        </div>
+                        <button type="submit" class="w-full py-3 btn-matrix rounded font-bold">ENVIAR MENSAJE</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-8 px-4 border-t border-gray-800">
+        <div class="container mx-auto text-center">
+            <p class="matrix-text">© 2023 Ethernai. Todos los derechos reservados.</p>
+            <p class="mt-2 text-gray-400">We don't predict the future, we build it.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Preloader
+        document.addEventListener('DOMContentLoaded', function() {
+            const preloader = document.getElementById('preloader');
+            const counter = document.getElementById('counter');
+            const slogan = document.getElementById('slogan');
+            
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 1;
+                counter.textContent = `${progress}%`;
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        slogan.classList.add('visible');
+                    }, 500);
+                    
+                    setTimeout(() => {
+                        preloader.style.opacity = '0';
+                        setTimeout(() => {
+                            preloader.style.display = 'none';
+                        }, 500);
+                    }, 2000);
+                }
+            }, 40); // 4000ms / 100 = 40ms per percentage point
+        });
+
+        // Cursor Glow Effect
+        const cursorGlow = document.getElementById('cursor-glow');
+        
+        document.addEventListener('mousemove', (e) => {
+            cursorGlow.style.left = e.clientX + 'px';
+            cursorGlow.style.top = e.clientY + 'px';
+        });
+        
+        // Interactive elements glow on hover
+        const interactiveElements = document.querySelectorAll('a, button, .card-container, .sector-card, .form-input');
+        
+        interactiveElements.forEach(element => {
+            element.addEventListener('mouseenter', () => {
+                cursorGlow.style.transform = 'scale(2)';
+                cursorGlow.style.opacity = '0.8';
+            });
+            
+            element.addEventListener('mouseleave', () => {
+                cursorGlow.style.transform = 'scale(1)';
+                cursorGlow.style.opacity = '0.5';
+            });
+        });
+
+        // Form submission
+        document.getElementById('contact-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const subject = document.getElementById('subject').value;
+            const message = document.getElementById('message').value;
+            
+            // Simple form validation
+            if (name && email && subject && message) {
+                // In a real implementation, you would send this data to a server
+                // For now, we'll just show an alert and reset the form
+                alert(`Gracias ${name}, tu mensaje ha sido enviado. Te contactaremos pronto.`);
+                this.reset();
+            } else {
+                alert('Por favor, completa todos los campos del formulario.');
+            }
+        });
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    </script>
 </body>
 </html>
-
