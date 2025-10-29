@@ -21,6 +21,7 @@
       margin: 0;
       background-color: var(--blanco);
       color: #222;
+      overflow-x: hidden;
     }
 
     header {
@@ -28,7 +29,8 @@
       color: var(--blanco);
       padding: 1.5rem;
       text-align: center;
-      font-size: 1.5rem;
+      font-size: 1.8rem;
+      letter-spacing: 1px;
     }
 
     #cards {
@@ -45,6 +47,13 @@
       padding: 1rem;
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
       text-align: center;
+      transition: all 0.3s ease-in-out;
+      cursor: pointer;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.15);
     }
 
     .card .value {
@@ -65,10 +74,42 @@
       border-radius: 12px;
       padding: 1.5rem;
       box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      position: relative;
+      transition: 0.3s;
+    }
+
+    .chart-container:hover {
+      transform: scale(1.01);
+    }
+
+    .info-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: var(--verde-oscuro);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    .info-btn:hover {
+      background: var(--verde-claro);
+      color: var(--verde-oscuro);
     }
 
     #calendar {
       padding: 2rem;
+    }
+
+    #calendar h3 {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
     #calendar-grid {
@@ -76,6 +117,7 @@
       grid-template-columns: repeat(7, 1fr);
       gap: .5rem;
       margin-top: 1rem;
+      animation: fadeIn 0.7s ease-in;
     }
 
     #calendar-grid div {
@@ -85,12 +127,29 @@
       min-height: 80px;
       position: relative;
       font-size: .9rem;
+      background-color: #f9f9f9;
+      transition: 0.3s;
+    }
+
+    #calendar-grid div:hover {
+      background-color: var(--verde-claro);
+      transform: scale(1.03);
     }
 
     #calendar-grid div span {
       display: block;
       color: var(--verde-oscuro);
       font-weight: bold;
+      margin-bottom: 4px;
+    }
+
+    .cita-tag {
+      background: var(--verde-claro);
+      margin-top: 2px;
+      border-radius: 4px;
+      padding: 2px 4px;
+      font-size: 0.75rem;
+      animation: fadeIn 0.8s ease-in-out;
     }
 
     footer {
@@ -99,6 +158,44 @@
       color: var(--blanco);
       padding: 1rem;
       margin-top: 2rem;
+    }
+
+    /* Modal */
+    #infoModal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.4);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: var(--blanco);
+      padding: 1.5rem;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      text-align: center;
+    }
+
+    .close-btn {
+      background: var(--verde-oscuro);
+      color: var(--blanco);
+      border: none;
+      padding: 6px 12px;
+      border-radius: 8px;
+      margin-top: 1rem;
+      cursor: pointer;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
@@ -113,10 +210,6 @@
         <h2>Total de citas</h2>
         <p class="value">0</p>
       </div>
-      <div class="card" id="agentes-activos">
-        <h2>Agentes activos</h2>
-        <p class="value">0</p>
-      </div>
       <div class="card" id="citas-hoy">
         <h2>Citas hoy</h2>
         <p class="value">0</p>
@@ -129,10 +222,12 @@
 
     <section id="charts">
       <div class="chart-container">
-        <h3>Citas por agente</h3>
-        <canvas id="citasPorAgente"></canvas>
+        <button class="info-btn" onclick="showInfo('agente')">i</button>
+        <h3>Citas por fecha</h3>
+        <canvas id="citasPorFecha"></canvas>
       </div>
       <div class="chart-container">
+        <button class="info-btn" onclick="showInfo('estado')">i</button>
         <h3>Citas por estado</h3>
         <canvas id="statusCitas"></canvas>
       </div>
@@ -148,10 +243,16 @@
     <p>¿Necesitas asistencia? Contáctanos: <strong>8123836266</strong></p>
   </footer>
 
+  <!-- Modal de información -->
+  <div id="infoModal">
+    <div class="modal-content">
+      <p id="infoText"></p>
+      <button class="close-btn" onclick="closeInfo()">Cerrar</button>
+    </div>
+  </div>
+
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      fetchExcelData();
-    });
+    document.addEventListener("DOMContentLoaded", () => fetchExcelData());
 
     async function fetchExcelData() {
       try {
@@ -169,7 +270,6 @@
 
     function renderDashboard(data) {
       const totalCitas = data.length;
-      const agentesUnicos = new Set(data.map(d => d.id_agente)).size;
       const hoy = new Date().toISOString().split("T")[0];
       const citasHoy = data.filter(d => d.fecha_cita?.toString().startsWith(hoy)).length;
 
@@ -182,7 +282,6 @@
       const promedioDias = (diferencias.reduce((a,b) => a + b, 0) / diferencias.length).toFixed(1);
 
       document.getElementById("total-citas").querySelector(".value").textContent = totalCitas;
-      document.getElementById("agentes-activos").querySelector(".value").textContent = agentesUnicos;
       document.getElementById("citas-hoy").querySelector(".value").textContent = citasHoy;
       document.getElementById("promedio-tiempo").querySelector(".value").textContent = `${promedioDias} días`;
 
@@ -191,25 +290,30 @@
     }
 
     function renderCharts(data) {
-      const citasPorAgente = {};
+      // Citas por fecha
+      const citasPorFecha = {};
       data.forEach(d => {
-        const agente = d.id_agente || "Sin agente";
-        citasPorAgente[agente] = (citasPorAgente[agente] || 0) + 1;
+        const fecha = d.fecha_cita ? d.fecha_cita.toString().split("T")[0] : "Sin fecha";
+        citasPorFecha[fecha] = (citasPorFecha[fecha] || 0) + 1;
       });
 
-      new Chart(document.getElementById("citasPorAgente"), {
-        type: "bar",
+      new Chart(document.getElementById("citasPorFecha"), {
+        type: "line",
         data: {
-          labels: Object.keys(citasPorAgente),
+          labels: Object.keys(citasPorFecha),
           datasets: [{
-            label: "Citas atendidas",
-            data: Object.values(citasPorAgente),
-            backgroundColor: "#006d3c"
+            label: "Citas registradas",
+            data: Object.values(citasPorFecha),
+            borderColor: "#006d3c",
+            backgroundColor: "#a6e3a1",
+            fill: true,
+            tension: 0.3
           }]
         },
-        options: { responsive: true, plugins: { legend: { display: false } } }
+        options: { responsive: true }
       });
 
+      // Citas por estado
       const statusCount = {};
       data.forEach(d => {
         const status = d.status_cita || "Desconocido";
@@ -230,35 +334,53 @@
     }
 
     function renderCalendar(data) {
-      const calendarGrid = document.getElementById("calendar-grid");
-      const fechaActual = new Date();
-      const ultimoDia = new Date(fechaActual.getFullYear(), fechaActual.getMonth() + 1, 0);
-      calendarGrid.innerHTML = "";
+      const grid = document.getElementById("calendar-grid");
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = now.getMonth();
+      const firstDay = new Date(year, month, 1).getDay();
+      const lastDate = new Date(year, month + 1, 0).getDate();
 
-      for (let d = 1; d <= ultimoDia.getDate(); d++) {
-        const fecha = new Date(fechaActual.getFullYear(), fechaActual.getMonth(), d);
-        const citasDelDia = data.filter(c => new Date(c.fecha_cita).toDateString() === fecha.toDateString());
+      grid.innerHTML = "";
 
-        const cell = document.createElement("div");
-        const label = document.createElement("span");
-        label.textContent = d;
-        cell.appendChild(label);
-
-        if (citasDelDia.length > 0) {
-          citasDelDia.forEach(c => {
-            const tag = document.createElement("div");
-            tag.textContent = c.servicio_motivo;
-            tag.style.background = "#a6e3a1";
-            tag.style.marginTop = "2px";
-            tag.style.borderRadius = "4px";
-            tag.style.padding = "2px 4px";
-            tag.style.fontSize = "0.75rem";
-            cell.appendChild(tag);
-          });
-        }
-
-        calendarGrid.appendChild(cell);
+      for (let i = 0; i < firstDay; i++) {
+        const empty = document.createElement("div");
+        grid.appendChild(empty);
       }
+
+      for (let d = 1; d <= lastDate; d++) {
+        const dateCell = document.createElement("div");
+        const span = document.createElement("span");
+        span.textContent = d;
+        dateCell.appendChild(span);
+
+        const fechaCompleta = new Date(year, month, d).toISOString().split("T")[0];
+        const citasDia = data.filter(c => c.fecha_cita?.toString().startsWith(fechaCompleta));
+
+        citasDia.forEach(c => {
+          const tag = document.createElement("div");
+          tag.textContent = c.servicio_motivo || "Sin motivo";
+          tag.className = "cita-tag";
+          dateCell.appendChild(tag);
+        });
+
+        grid.appendChild(dateCell);
+      }
+    }
+
+    function showInfo(type) {
+      const modal = document.getElementById("infoModal");
+      const text = document.getElementById("infoText");
+      modal.style.display = "flex";
+      if (type === "agente") {
+        text.textContent = "Este gráfico muestra la cantidad de citas creadas por fecha, lo que te ayuda a analizar los días con mayor carga de trabajo.";
+      } else {
+        text.textContent = "Este gráfico muestra la distribución de las citas según su estado (por ejemplo: completadas, pendientes, canceladas).";
+      }
+    }
+
+    function closeInfo() {
+      document.getElementById("infoModal").style.display = "none";
     }
   </script>
 </body>
