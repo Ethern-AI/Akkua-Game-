@@ -1,242 +1,387 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rendimiento del Agente</title>
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<style>
-  body {
-    font-family: 'Segoe UI', sans-serif;
-    background-color: #ffffff;
-    color: #033f1a;
-    margin: 0;
-    padding: 0;
-  }
-  header {
-    background-color: #1b8c47;
-    color: white;
-    padding: 20px;
-    text-align: center;
-    font-size: 1.8em;
-  }
-  main {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 20px;
-    padding: 20px;
-  }
-  section {
-    background: #f8fff9;
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-  }
-  section:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  }
-  h2 {
-    border-left: 6px solid #1b8c47;
-    padding-left: 10px;
-    color: #033f1a;
-  }
-  canvas {
-    width: 100% !important;
-    height: 300px !important;
-  }
-  #calendar {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 5px;
-    text-align: center;
-  }
-  .day {
-    border: 1px solid #d6ecd9;
-    padding: 10px;
-    border-radius: 8px;
-    transition: background 0.3s, transform 0.2s;
-  }
-  .day:hover {
-    background-color: #d6f5d6;
-    transform: scale(1.05);
-  }
-  .event {
-    background-color: #1b8c47;
-    color: white;
-    border-radius: 6px;
-    padding: 2px 4px;
-    margin-top: 5px;
-    font-size: 0.8em;
-  }
-  footer {
-    text-align: center;
-    padding: 15px;
-    background-color: #1b8c47;
-    color: white;
-    margin-top: 30px;
-  }
-  .info-btn {
-    background-color: #1b8c47;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    padding: 8px 12px;
-    cursor: pointer;
-    transition: background 0.3s;
-  }
-  .info-btn:hover {
-    background-color: #146c36;
-  }
-  .tooltip {
-    display: none;
-    background: #033f1a;
-    color: white;
-    padding: 10px;
-    border-radius: 6px;
-    position: absolute;
-    z-index: 10;
-    width: 200px;
-  }
-  .upload-section {
-    text-align: center;
-    margin: 15px;
-  }
-  input[type="file"] {
-    padding: 10px;
-    border: 1px solid #1b8c47;
-    border-radius: 8px;
-    background-color: #f8fff9;
-  }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rendimiento del Agente</title>
+
+  <!-- Librerías -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    :root {
+      --verde-oscuro: #006d3c;
+      --verde-claro: #a6e3a1;
+      --blanco: #ffffff;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background-color: var(--blanco);
+      color: #222;
+      overflow-x: hidden;
+    }
+
+    header {
+      background-color: var(--verde-oscuro);
+      color: var(--blanco);
+      padding: 1.5rem;
+      text-align: center;
+      font-size: 1.8rem;
+      letter-spacing: 1px;
+    }
+
+    #cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      padding: 1rem 2rem;
+    }
+
+    .card {
+      background-color: var(--verde-claro);
+      border-left: 6px solid var(--verde-oscuro);
+      border-radius: 12px;
+      padding: 1rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      text-align: center;
+      transition: all 0.3s ease-in-out;
+      cursor: pointer;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+    }
+
+    .card .value {
+      font-size: 1.8rem;
+      color: var(--verde-oscuro);
+    }
+
+    #charts {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 2rem;
+      padding: 2rem;
+    }
+
+    .chart-container {
+      background-color: var(--blanco);
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      position: relative;
+      transition: 0.3s;
+    }
+
+    .chart-container:hover {
+      transform: scale(1.01);
+    }
+
+    .info-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: var(--verde-oscuro);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    .info-btn:hover {
+      background: var(--verde-claro);
+      color: var(--verde-oscuro);
+    }
+
+    #calendar {
+      padding: 2rem;
+    }
+
+    #calendar h3 {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    #calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: .5rem;
+      margin-top: 1rem;
+      animation: fadeIn 0.7s ease-in;
+    }
+
+    #calendar-grid div {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: .5rem;
+      min-height: 80px;
+      position: relative;
+      font-size: .9rem;
+      background-color: #f9f9f9;
+      transition: 0.3s;
+    }
+
+    #calendar-grid div:hover {
+      background-color: var(--verde-claro);
+      transform: scale(1.03);
+    }
+
+    #calendar-grid div span {
+      display: block;
+      color: var(--verde-oscuro);
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+
+    .cita-tag {
+      background: var(--verde-claro);
+      margin-top: 2px;
+      border-radius: 4px;
+      padding: 2px 4px;
+      font-size: 0.75rem;
+      animation: fadeIn 0.8s ease-in-out;
+    }
+
+    footer {
+      text-align: center;
+      background-color: var(--verde-oscuro);
+      color: var(--blanco);
+      padding: 1rem;
+      margin-top: 2rem;
+    }
+
+    /* Modal */
+    #infoModal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.4);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: var(--blanco);
+      padding: 1.5rem;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      text-align: center;
+    }
+
+    .close-btn {
+      background: var(--verde-oscuro);
+      color: var(--blanco);
+      border: none;
+      padding: 6px 12px;
+      border-radius: 8px;
+      margin-top: 1rem;
+      cursor: pointer;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
 </head>
 <body>
-<header>Rendimiento del Agente</header>
+  <header>
+    <h1>Rendimiento del Agente</h1>
+  </header>
 
-<div class="upload-section">
-  <p>📂 Sube el archivo <strong>TESTDB.xlsx</strong> para visualizar los datos:</p>
-  <input type="file" id="fileInput" accept=".xlsx" />
-</div>
+  <main>
+    <section id="cards">
+      <div class="card" id="total-citas">
+        <h2>Total de citas</h2>
+        <p class="value">0</p>
+      </div>
+      <div class="card" id="citas-hoy">
+        <h2>Citas hoy</h2>
+        <p class="value">0</p>
+      </div>
+      <div class="card" id="promedio-tiempo">
+        <h2>Promedio entre creación y cita</h2>
+        <p class="value">0 días</p>
+      </div>
+    </section>
 
-<main>
-  <section>
-    <h2>Resumen de Citas</h2>
-    <canvas id="chartCitas"></canvas>
-    <button class="info-btn" onclick="toggleTooltip('tooltip1')">ℹ️ Información</button>
-    <div id="tooltip1" class="tooltip">Este gráfico muestra el número de citas atendidas por día.</div>
-  </section>
+    <section id="charts">
+      <div class="chart-container">
+        <button class="info-btn" onclick="showInfo('agente')">i</button>
+        <h3>Citas por fecha</h3>
+        <canvas id="citasPorFecha"></canvas>
+      </div>
+      <div class="chart-container">
+        <button class="info-btn" onclick="showInfo('estado')">i</button>
+        <h3>Citas por estado</h3>
+        <canvas id="statusCitas"></canvas>
+      </div>
+    </section>
 
-  <section>
-    <h2>Calendario de Citas</h2>
-    <div id="calendar"></div>
-  </section>
-</main>
+    <section id="calendar">
+      <h3>Calendario de citas</h3>
+      <div id="calendar-grid"></div>
+    </section>
+  </main>
 
-<footer>
-  Contacto de asistencia: <strong>8123836266</strong>
-</footer>
+  <footer>
+    <p>¿Necesitas asistencia? Contáctanos: <strong>8123836266</strong></p>
+  </footer>
 
-<script>
-function parseDate(dateStr) {
-  if (!dateStr) return null;
-  const [day, month, year] = dateStr.split("/");
-  return new Date(`${year}-${month}-${day}`);
-}
+  <!-- Modal de información -->
+  <div id="infoModal">
+    <div class="modal-content">
+      <p id="infoText"></p>
+      <button class="close-btn" onclick="closeInfo()">Cerrar</button>
+    </div>
+  </div>
 
-function toggleTooltip(id) {
-  const tooltip = document.getElementById(id);
-  tooltip.style.display = tooltip.style.display === "block" ? "none" : "block";
-}
+  <script>
+    document.addEventListener("DOMContentLoaded", () => fetchExcelData());
 
-document.getElementById('fileInput').addEventListener('change', handleFile);
-
-function handleFile(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    const data = new Uint8Array(e.target.result);
-    const workbook = XLSX.read(data, { type: "array" });
-    const sheetName = workbook.SheetNames[0];
-    const sheet = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
-
-    const citasPorFecha = {};
-    const citas = [];
-
-    sheet.forEach(row => {
-      const fecha = parseDate(row.fecha_cita);
-      if (!fecha || isNaN(fecha)) return;
-      const fechaKey = fecha.toISOString().split("T")[0];
-      citas.push({ fecha, servicio: row.servicio_motivo });
-      citasPorFecha[fechaKey] = (citasPorFecha[fechaKey] || 0) + 1;
-    });
-
-    crearGrafico(citasPorFecha);
-    crearCalendario(citas);
-  };
-  reader.readAsArrayBuffer(file);
-}
-
-function crearGrafico(citasPorFecha) {
-  const labels = Object.keys(citasPorFecha).sort();
-  const values = labels.map(l => citasPorFecha[l]);
-
-  new Chart(document.getElementById('chartCitas'), {
-    type: 'bar',
-    data: {
-      labels: labels,
-      datasets: [{
-        label: 'Citas atendidas',
-        data: values,
-        backgroundColor: '#1b8c47'
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: { legend: { display: false } }
-    }
-  });
-}
-
-function crearCalendario(citas) {
-  const contenedor = document.getElementById("calendar");
-  contenedor.innerHTML = "";
-
-  const hoy = new Date();
-  const mes = hoy.getMonth();
-  const anio = hoy.getFullYear();
-
-  const primerDia = new Date(anio, mes, 1);
-  const ultimoDia = new Date(anio, mes + 1, 0);
-  const diasEnMes = ultimoDia.getDate();
-
-  for (let i = 0; i < primerDia.getDay(); i++) {
-    contenedor.appendChild(document.createElement("div"));
-  }
-
-  for (let dia = 1; dia <= diasEnMes; dia++) {
-    const fechaActual = new Date(anio, mes, dia);
-    const fechaKey = fechaActual.toISOString().split("T")[0];
-    const div = document.createElement("div");
-    div.classList.add("day");
-    div.innerHTML = `<strong>${dia}</strong>`;
-
-    citas.forEach(c => {
-      const fKey = c.fecha.toISOString().split("T")[0];
-      if (fKey === fechaKey) {
-        const event = document.createElement("div");
-        event.classList.add("event");
-        event.textContent = c.servicio || "Cita";
-        div.appendChild(event);
+    async function fetchExcelData() {
+      try {
+        const response = await fetch("TESTDB.xlsx");
+        const arrayBuffer = await response.arrayBuffer();
+        const workbook = XLSX.read(arrayBuffer, { type: "array" });
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        const data = XLSX.utils.sheet_to_json(sheet);
+        renderDashboard(data);
+      } catch (error) {
+        console.error("Error al cargar el archivo Excel:", error);
+        alert("No se pudo cargar TESTDB.xlsx. Asegúrate de que esté en la misma carpeta que este HTML.");
       }
-    });
+    }
 
-    contenedor.appendChild(div);
-  }
-}
-</script>
+    function renderDashboard(data) {
+      const totalCitas = data.length;
+      const hoy = new Date().toISOString().split("T")[0];
+      const citasHoy = data.filter(d => d.fecha_cita?.toString().startsWith(hoy)).length;
+
+      const diferencias = data.map(d => {
+        const f1 = new Date(d.fecha_creacion);
+        const f2 = new Date(d.fecha_cita);
+        return (f2 - f1) / (1000 * 60 * 60 * 24);
+      }).filter(v => !isNaN(v));
+
+      const promedioDias = (diferencias.reduce((a,b) => a + b, 0) / diferencias.length).toFixed(1);
+
+      document.getElementById("total-citas").querySelector(".value").textContent = totalCitas;
+      document.getElementById("citas-hoy").querySelector(".value").textContent = citasHoy;
+      document.getElementById("promedio-tiempo").querySelector(".value").textContent = `${promedioDias} días`;
+
+      renderCharts(data);
+      renderCalendar(data);
+    }
+
+    function renderCharts(data) {
+      // Citas por fecha
+      const citasPorFecha = {};
+      data.forEach(d => {
+        const fecha = d.fecha_cita ? d.fecha_cita.toString().split("T")[0] : "Sin fecha";
+        citasPorFecha[fecha] = (citasPorFecha[fecha] || 0) + 1;
+      });
+
+      new Chart(document.getElementById("citasPorFecha"), {
+        type: "line",
+        data: {
+          labels: Object.keys(citasPorFecha),
+          datasets: [{
+            label: "Citas registradas",
+            data: Object.values(citasPorFecha),
+            borderColor: "#006d3c",
+            backgroundColor: "#a6e3a1",
+            fill: true,
+            tension: 0.3
+          }]
+        },
+        options: { responsive: true }
+      });
+
+      // Citas por estado
+      const statusCount = {};
+      data.forEach(d => {
+        const status = d.status_cita || "Desconocido";
+        statusCount[status] = (statusCount[status] || 0) + 1;
+      });
+
+      new Chart(document.getElementById("statusCitas"), {
+        type: "doughnut",
+        data: {
+          labels: Object.keys(statusCount),
+          datasets: [{
+            data: Object.values(statusCount),
+            backgroundColor: ["#006d3c", "#a6e3a1", "#4caf50", "#b2dfdb"]
+          }]
+        },
+        options: { responsive: true }
+      });
+    }
+
+    function renderCalendar(data) {
+      const grid = document.getElementById("calendar-grid");
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = now.getMonth();
+      const firstDay = new Date(year, month, 1).getDay();
+      const lastDate = new Date(year, month + 1, 0).getDate();
+
+      grid.innerHTML = "";
+
+      for (let i = 0; i < firstDay; i++) {
+        const empty = document.createElement("div");
+        grid.appendChild(empty);
+      }
+
+      for (let d = 1; d <= lastDate; d++) {
+        const dateCell = document.createElement("div");
+        const span = document.createElement("span");
+        span.textContent = d;
+        dateCell.appendChild(span);
+
+        const fechaCompleta = new Date(year, month, d).toISOString().split("T")[0];
+        const citasDia = data.filter(c => c.fecha_cita?.toString().startsWith(fechaCompleta));
+
+        citasDia.forEach(c => {
+          const tag = document.createElement("div");
+          tag.textContent = c.servicio_motivo || "Sin motivo";
+          tag.className = "cita-tag";
+          dateCell.appendChild(tag);
+        });
+
+        grid.appendChild(dateCell);
+      }
+    }
+
+    function showInfo(type) {
+      const modal = document.getElementById("infoModal");
+      const text = document.getElementById("infoText");
+      modal.style.display = "flex";
+      if (type === "agente") {
+        text.textContent = "Este gráfico muestra la cantidad de citas creadas por fecha, lo que te ayuda a analizar los días con mayor carga de trabajo.";
+      } else {
+        text.textContent = "Este gráfico muestra la distribución de las citas según su estado (por ejemplo: completadas, pendientes, canceladas).";
+      }
+    }
+
+    function closeInfo() {
+      document.getElementById("infoModal").style.display = "none";
+    }
+  </script>
 </body>
 </html>
