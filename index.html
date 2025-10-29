@@ -1,494 +1,265 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ethernai - We don't predict the future, we build it</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --matrix-green: #00ff41;
-            --dark-bg: #0a0a0a;
-        }
-        
-        body {
-            font-family: 'Share Tech Mono', monospace;
-            background-color: var(--dark-bg);
-            color: white;
-            overflow-x: hidden;
-        }
-        
-        h1, h2, h3, h4, h5, h6 {
-            font-family: 'Orbitron', sans-serif;
-        }
-        
-        .matrix-text {
-            color: var(--matrix-green);
-            text-shadow: 0 0 5px var(--matrix-green);
-        }
-        
-        .matrix-border {
-            border: 1px solid var(--matrix-green);
-            box-shadow: 0 0 10px var(--matrix-green);
-        }
-        
-        .matrix-glow {
-            text-shadow: 0 0 5px var(--matrix-green), 0 0 10px var(--matrix-green);
-        }
-        
-        .preloader {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: var(--dark-bg);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            transition: opacity 0.5s ease;
-        }
-        
-        .preloader-counter {
-            font-size: 4rem;
-            font-weight: bold;
-            margin-bottom: 2rem;
-            color: var(--matrix-green);
-        }
-        
-        .slogan {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 1s ease;
-            font-size: 1.5rem;
-            text-align: center;
-        }
-        
-        .slogan.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        
-        .hero-video {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            z-index: -1;
-        }
-        
-        .hero-overlay {
-            background: rgba(10, 10, 10, 0.7);
-            backdrop-filter: blur(5px);
-        }
-        
-        .card-container {
-            perspective: 1000px;
-        }
-        
-        .card {
-            position: relative;
-            width: 100%;
-            height: 300px;
-            transform-style: preserve-3d;
-            transition: transform 0.8s;
-        }
-        
-        .card:hover {
-            transform: rotateY(180deg);
-        }
-        
-        .card-front, .card-back {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 2rem;
-            border-radius: 10px;
-        }
-        
-        .card-front {
-            background-color: rgba(0, 255, 65, 0.1);
-            border: 1px solid var(--matrix-green);
-        }
-        
-        .card-back {
-            background-color: rgba(10, 10, 10, 0.9);
-            border: 1px solid var(--matrix-green);
-            transform: rotateY(180deg);
-            text-align: center;
-        }
-        
-        .sector-card {
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-        
-        .sector-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 0 20px var(--matrix-green);
-        }
-        
-        .sector-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(0, 255, 65, 0.2), transparent);
-            transition: left 0.5s;
-        }
-        
-        .sector-card:hover::before {
-            left: 100%;
-        }
-        
-        .cursor-glow {
-            position: fixed;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: var(--matrix-green);
-            pointer-events: none;
-            mix-blend-mode: screen;
-            z-index: 9999;
-            opacity: 0.5;
-            transition: transform 0.1s;
-        }
-        
-        .form-input {
-            background-color: rgba(10, 10, 10, 0.7);
-            border: 1px solid #333;
-            color: white;
-            transition: all 0.3s ease;
-        }
-        
-        .form-input:focus {
-            border-color: var(--matrix-green);
-            box-shadow: 0 0 10px var(--matrix-green);
-            outline: none;
-        }
-        
-        .btn-matrix {
-            background-color: transparent;
-            border: 1px solid var(--matrix-green);
-            color: var(--matrix-green);
-            transition: all 0.3s ease;
-        }
-        
-        .btn-matrix:hover {
-            background-color: var(--matrix-green);
-            color: var(--dark-bg);
-            box-shadow: 0 0 15px var(--matrix-green);
-        }
-        
-        @media (max-width: 768px) {
-            .cursor-glow {
-                display: none;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rendimiento del Agente</title>
+
+  <!-- Librerías -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    :root {
+      --verde-oscuro: #006d3c;
+      --verde-claro: #a6e3a1;
+      --blanco: #ffffff;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background-color: var(--blanco);
+      color: #222;
+    }
+
+    header {
+      background-color: var(--verde-oscuro);
+      color: var(--blanco);
+      padding: 1.5rem;
+      text-align: center;
+      font-size: 1.5rem;
+    }
+
+    #cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      padding: 1rem 2rem;
+    }
+
+    .card {
+      background-color: var(--verde-claro);
+      border-left: 6px solid var(--verde-oscuro);
+      border-radius: 12px;
+      padding: 1rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    .card .value {
+      font-size: 1.8rem;
+      color: var(--verde-oscuro);
+    }
+
+    #charts {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 2rem;
+      padding: 2rem;
+    }
+
+    .chart-container {
+      background-color: var(--blanco);
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+
+    #calendar {
+      padding: 2rem;
+    }
+
+    #calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: .5rem;
+      margin-top: 1rem;
+    }
+
+    #calendar-grid div {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: .5rem;
+      min-height: 80px;
+      position: relative;
+      font-size: .9rem;
+    }
+
+    #calendar-grid div span {
+      display: block;
+      color: var(--verde-oscuro);
+      font-weight: bold;
+    }
+
+    footer {
+      text-align: center;
+      background-color: var(--verde-oscuro);
+      color: var(--blanco);
+      padding: 1rem;
+      margin-top: 2rem;
+    }
+  </style>
 </head>
-<body class="bg-black text-white">
-    <!-- Preloader -->
-    <div id="preloader" class="preloader">
-        <div id="counter" class="preloader-counter">0%</div>
-        <div id="slogan" class="slogan">We don't predict the future, we build it.</div>
-    </div>
+<body>
+  <header>
+    <h1>Rendimiento del Agente</h1>
+  </header>
 
-    <!-- Cursor Glow Effect -->
-    <div id="cursor-glow" class="cursor-glow"></div>
-
-    <!-- Header -->
-    <header class="fixed w-full z-50 bg-black/80 backdrop-blur-sm">
-        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-            <div class="text-2xl font-bold matrix-text">ETHERNAI</div>
-            <nav class="hidden md:flex space-x-6">
-                <a href="#hero" class="hover:matrix-text transition-colors">Inicio</a>
-                <a href="#services" class="hover:matrix-text transition-colors">Servicios</a>
-                <a href="#sectors" class="hover:matrix-text transition-colors">Sectores</a>
-                <a href="#contact" class="hover:matrix-text transition-colors">Contacto</a>
-            </nav>
-            <button class="md:hidden matrix-text">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-            </button>
-        </div>
-    </header>
-
-    <!-- Hero Section -->
-    <section id="hero" class="relative h-screen flex items-center justify-center overflow-hidden">
-        <video class="hero-video" autoplay muted loop>
-            <source src="https://github.com/Ethern-AI/Akkua-Game-/raw/refs/heads/main/WhatsApp%20Video%202025-10-07%20at%2012.36.09%20PM.mp4" type="video/mp4">
-            Your browser does not support the video tag.
-        </video>
-        <div class="hero-overlay absolute inset-0"></div>
-        <div class="relative z-10 text-center px-4">
-            <h1 class="text-4xl md:text-6xl font-bold mb-6 matrix-glow">QUIENES SOMOS</h1>
-            <p class="text-xl md:text-2xl max-w-3xl mx-auto">
-                En Ethernai, somos pioneros en soluciones tecnológicas avanzadas que transforman industrias y redefinen el futuro digital. Nuestro equipo de expertos combina inteligencia artificial, blockchain y realidad extendida para crear experiencias innovadoras.
-            </p>
-        </div>
+  <main>
+    <section id="cards">
+      <div class="card" id="total-citas">
+        <h2>Total de citas</h2>
+        <p class="value">0</p>
+      </div>
+      <div class="card" id="agentes-activos">
+        <h2>Agentes activos</h2>
+        <p class="value">0</p>
+      </div>
+      <div class="card" id="citas-hoy">
+        <h2>Citas hoy</h2>
+        <p class="value">0</p>
+      </div>
+      <div class="card" id="promedio-tiempo">
+        <h2>Promedio entre creación y cita</h2>
+        <p class="value">0 días</p>
+      </div>
     </section>
 
-    <!-- Services Section -->
-    <section id="services" class="py-20 px-4">
-        <div class="container mx-auto">
-            <h2 class="text-3xl md:text-4xl font-bold text-center mb-16 matrix-text">NUESTROS SERVICIOS</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
-                <!-- B2B Card -->
-                <div class="card-container">
-                    <div class="card">
-                        <div class="card-front">
-                            <h3 class="text-2xl font-bold matrix-text mb-4">BUSINESS TO BUSINESS</h3>
-                            <p class="text-center">Soluciones empresariales de vanguardia</p>
-                        </div>
-                        <div class="card-back">
-                            <h3 class="text-2xl font-bold matrix-text mb-4">B2B</h3>
-                            <p class="mb-4">Desarrollamos soluciones tecnológicas personalizadas para empresas que buscan optimizar procesos, aumentar eficiencia y obtener ventajas competitivas.</p>
-                            <ul class="text-left list-disc pl-5">
-                                <li>Plataformas empresariales en la nube</li>
-                                <li>Automatización de procesos con IA</li>
-                                <li>Soluciones de cadena de suministro</li>
-                                <li>Análisis predictivo de datos</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- B2C Card -->
-                <div class="card-container">
-                    <div class="card">
-                        <div class="card-front">
-                            <h3 class="text-2xl font-bold matrix-text mb-4">BUSINESS TO CLIENT</h3>
-                            <p class="text-center">Experiencias digitales innovadoras</p>
-                        </div>
-                        <div class="card-back">
-                            <h3 class="text-2xl font-bold matrix-text mb-4">B2C</h3>
-                            <p class="mb-4">Creamos experiencias digitales envolventes que conectan marcas con consumidores a través de interfaces intuitivas y tecnologías emergentes.</p>
-                            <ul class="text-left list-disc pl-5">
-                                <li>Aplicaciones móviles inmersivas</li>
-                                <li>Plataformas de comercio electrónico</li>
-                                <li>Experiencias de realidad aumentada</li>
-                                <li>Asistentes virtuales personalizados</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <section id="charts">
+      <div class="chart-container">
+        <h3>Citas por agente</h3>
+        <canvas id="citasPorAgente"></canvas>
+      </div>
+      <div class="chart-container">
+        <h3>Citas por estado</h3>
+        <canvas id="statusCitas"></canvas>
+      </div>
     </section>
 
-    <!-- Sectors Section -->
-    <section id="sectors" class="py-20 px-4 bg-gray-900/50">
-        <div class="container mx-auto">
-            <h2 class="text-3xl md:text-4xl font-bold text-center mb-16 matrix-text">SECTORES</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Sector Cards -->
-                <div class="sector-card matrix-border p-6 rounded-lg">
-                    <div class="text-2xl font-bold matrix-text mb-4">MARKETING</div>
-                    <p>Plataformas de análisis predictivo y automatización de campañas con IA para maximizar ROI.</p>
-                </div>
-                <div class="sector-card matrix-border p-6 rounded-lg">
-                    <div class="text-2xl font-bold matrix-text mb-4">SERVICIO AL CLIENTE</div>
-                    <p>Asistentes virtuales avanzados y sistemas de gestión de relaciones con machine learning.</p>
-                </div>
-                <div class="sector-card matrix-border p-6 rounded-lg">
-                    <div class="text-2xl font-bold matrix-text mb-4">RESTAURANTERO</div>
-                    <p>Sistemas de gestión integral con realidad aumentada para menús y experiencias personalizadas.</p>
-                </div>
-                <div class="sector-card matrix-border p-6 rounded-lg">
-                    <div class="text-2xl font-bold matrix-text mb-4">LEGAL</div>
-                    <p>Plataformas de análisis documental con IA y sistemas de gestión de casos automatizados.</p>
-                </div>
-                <div class="sector-card matrix-border p-6 rounded-lg">
-                    <div class="text-2xl font-bold matrix-text mb-4">FINANCIERO</div>
-                    <p>Sistemas de trading algorítmico, análisis de riesgo y plataformas blockchain seguras.</p>
-                </div>
-                <div class="sector-card matrix-border p-6 rounded-lg">
-                    <div class="text-2xl font-bold matrix-text mb-4">SALUD</div>
-                    <p>Diagnóstico asistido por IA, telemedicina avanzada y gestión de datos médicos seguros.</p>
-                </div>
-            </div>
-        </div>
+    <section id="calendar">
+      <h3>Calendario de citas</h3>
+      <div id="calendar-grid"></div>
     </section>
+  </main>
 
-    <!-- Contact Section -->
-    <section id="contact" class="py-20 px-4">
-        <div class="container mx-auto max-w-4xl">
-            <h2 class="text-3xl md:text-4xl font-bold text-center mb-16 matrix-text">CONTACTO</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
-                <div>
-                    <h3 class="text-2xl font-bold mb-6 matrix-text">INFORMACIÓN DE CONTACTO</h3>
-                    <div class="space-y-4">
-                        <div class="flex items-start">
-                            <div class="matrix-text mr-3">📍</div>
-                            <div>
-                                <p class="font-bold">Dirección</p>
-                                <p>Avenida Tecnológica 123,</p>
-                                <p>Distrito Digital, CP 28080</p>
-                            </div>
-                        </div>
-                        <div class="flex items-start">
-                            <div class="matrix-text mr-3">📞</div>
-                            <div>
-                                <p class="font-bold">Teléfono</p>
-                                <p>+34 912 345 678</p>
-                            </div>
-                        </div>
-                        <div class="flex items-start">
-                            <div class="matrix-text mr-3">✉️</div>
-                            <div>
-                                <p class="font-bold">Email</p>
-                                <p>info@ethernai.com</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mt-8">
-                        <h4 class="text-xl font-bold mb-4 matrix-text">SÍGUENOS</h4>
-                        <div class="flex space-x-4">
-                            <a href="#" class="matrix-text hover:scale-110 transition-transform">LinkedIn</a>
-                            <a href="#" class="matrix-text hover:scale-110 transition-transform">Twitter</a>
-                            <a href="#" class="matrix-text hover:scale-110 transition-transform">GitHub</a>
-                        </div>
-                    </div>
-                </div>
-                <div>
-                    <form id="contact-form" class="space-y-6">
-                        <div>
-                            <label for="name" class="block mb-2 matrix-text">Nombre</label>
-                            <input type="text" id="name" name="name" class="w-full p-3 form-input rounded" required>
-                        </div>
-                        <div>
-                            <label for="email" class="block mb-2 matrix-text">Email</label>
-                            <input type="email" id="email" name="email" class="w-full p-3 form-input rounded" required>
-                        </div>
-                        <div>
-                            <label for="subject" class="block mb-2 matrix-text">Asunto</label>
-                            <input type="text" id="subject" name="subject" class="w-full p-3 form-input rounded" required>
-                        </div>
-                        <div>
-                            <label for="message" class="block mb-2 matrix-text">Mensaje</label>
-                            <textarea id="message" name="message" rows="5" class="w-full p-3 form-input rounded" required></textarea>
-                        </div>
-                        <button type="submit" class="w-full py-3 btn-matrix rounded font-bold">ENVIAR MENSAJE</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </section>
+  <footer>
+    <p>¿Necesitas asistencia? Contáctanos: <strong>8123836266</strong></p>
+  </footer>
 
-    <!-- Footer -->
-    <footer class="py-8 px-4 border-t border-gray-800">
-        <div class="container mx-auto text-center">
-            <p class="matrix-text">© 2023 Ethernai. Todos los derechos reservados.</p>
-            <p class="mt-2 text-gray-400">We don't predict the future, we build it.</p>
-        </div>
-    </footer>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      fetchExcelData();
+    });
 
-    <script>
-        // Preloader
-        document.addEventListener('DOMContentLoaded', function() {
-            const preloader = document.getElementById('preloader');
-            const counter = document.getElementById('counter');
-            const slogan = document.getElementById('slogan');
-            
-            let progress = 0;
-            const interval = setInterval(() => {
-                progress += 1;
-                counter.textContent = `${progress}%`;
-                
-                if (progress >= 100) {
-                    clearInterval(interval);
-                    setTimeout(() => {
-                        slogan.classList.add('visible');
-                    }, 500);
-                    
-                    setTimeout(() => {
-                        preloader.style.opacity = '0';
-                        setTimeout(() => {
-                            preloader.style.display = 'none';
-                        }, 500);
-                    }, 2000);
-                }
-            }, 40); // 4000ms / 100 = 40ms per percentage point
-        });
+    async function fetchExcelData() {
+      try {
+        const response = await fetch("TESTDB.xlsx");
+        const arrayBuffer = await response.arrayBuffer();
+        const workbook = XLSX.read(arrayBuffer, { type: "array" });
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        const data = XLSX.utils.sheet_to_json(sheet);
+        renderDashboard(data);
+      } catch (error) {
+        console.error("Error al cargar el archivo Excel:", error);
+        alert("No se pudo cargar TESTDB.xlsx. Asegúrate de que esté en la misma carpeta que este HTML.");
+      }
+    }
 
-        // Cursor Glow Effect
-        const cursorGlow = document.getElementById('cursor-glow');
-        
-        document.addEventListener('mousemove', (e) => {
-            cursorGlow.style.left = e.clientX + 'px';
-            cursorGlow.style.top = e.clientY + 'px';
-        });
-        
-        // Interactive elements glow on hover
-        const interactiveElements = document.querySelectorAll('a, button, .card-container, .sector-card, .form-input');
-        
-        interactiveElements.forEach(element => {
-            element.addEventListener('mouseenter', () => {
-                cursorGlow.style.transform = 'scale(2)';
-                cursorGlow.style.opacity = '0.8';
-            });
-            
-            element.addEventListener('mouseleave', () => {
-                cursorGlow.style.transform = 'scale(1)';
-                cursorGlow.style.opacity = '0.5';
-            });
-        });
+    function renderDashboard(data) {
+      const totalCitas = data.length;
+      const agentesUnicos = new Set(data.map(d => d.id_agente)).size;
+      const hoy = new Date().toISOString().split("T")[0];
+      const citasHoy = data.filter(d => d.fecha_cita?.toString().startsWith(hoy)).length;
 
-        // Form submission
-        document.getElementById('contact-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            const subject = document.getElementById('subject').value;
-            const message = document.getElementById('message').value;
-            
-            // Simple form validation
-            if (name && email && subject && message) {
-                // In a real implementation, you would send this data to a server
-                // For now, we'll just show an alert and reset the form
-                alert(`Gracias ${name}, tu mensaje ha sido enviado. Te contactaremos pronto.`);
-                this.reset();
-            } else {
-                alert('Por favor, completa todos los campos del formulario.');
-            }
-        });
+      const diferencias = data.map(d => {
+        const f1 = new Date(d.fecha_creacion);
+        const f2 = new Date(d.fecha_cita);
+        return (f2 - f1) / (1000 * 60 * 60 * 24);
+      }).filter(v => !isNaN(v));
 
-        // Smooth scrolling for navigation links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                
-                const targetId = this.getAttribute('href');
-                if (targetId === '#') return;
-                
-                const targetElement = document.querySelector(targetId);
-                if (targetElement) {
-                    window.scrollTo({
-                        top: targetElement.offsetTop - 80,
-                        behavior: 'smooth'
-                    });
-                }
-            });
-        });
-    </script>
+      const promedioDias = (diferencias.reduce((a,b) => a + b, 0) / diferencias.length).toFixed(1);
+
+      document.getElementById("total-citas").querySelector(".value").textContent = totalCitas;
+      document.getElementById("agentes-activos").querySelector(".value").textContent = agentesUnicos;
+      document.getElementById("citas-hoy").querySelector(".value").textContent = citasHoy;
+      document.getElementById("promedio-tiempo").querySelector(".value").textContent = `${promedioDias} días`;
+
+      renderCharts(data);
+      renderCalendar(data);
+    }
+
+    function renderCharts(data) {
+      const citasPorAgente = {};
+      data.forEach(d => {
+        const agente = d.id_agente || "Sin agente";
+        citasPorAgente[agente] = (citasPorAgente[agente] || 0) + 1;
+      });
+
+      new Chart(document.getElementById("citasPorAgente"), {
+        type: "bar",
+        data: {
+          labels: Object.keys(citasPorAgente),
+          datasets: [{
+            label: "Citas atendidas",
+            data: Object.values(citasPorAgente),
+            backgroundColor: "#006d3c"
+          }]
+        },
+        options: { responsive: true, plugins: { legend: { display: false } } }
+      });
+
+      const statusCount = {};
+      data.forEach(d => {
+        const status = d.status_cita || "Desconocido";
+        statusCount[status] = (statusCount[status] || 0) + 1;
+      });
+
+      new Chart(document.getElementById("statusCitas"), {
+        type: "doughnut",
+        data: {
+          labels: Object.keys(statusCount),
+          datasets: [{
+            data: Object.values(statusCount),
+            backgroundColor: ["#006d3c", "#a6e3a1", "#4caf50", "#b2dfdb"]
+          }]
+        },
+        options: { responsive: true }
+      });
+    }
+
+    function renderCalendar(data) {
+      const calendarGrid = document.getElementById("calendar-grid");
+      const fechaActual = new Date();
+      const ultimoDia = new Date(fechaActual.getFullYear(), fechaActual.getMonth() + 1, 0);
+      calendarGrid.innerHTML = "";
+
+      for (let d = 1; d <= ultimoDia.getDate(); d++) {
+        const fecha = new Date(fechaActual.getFullYear(), fechaActual.getMonth(), d);
+        const citasDelDia = data.filter(c => new Date(c.fecha_cita).toDateString() === fecha.toDateString());
+
+        const cell = document.createElement("div");
+        const label = document.createElement("span");
+        label.textContent = d;
+        cell.appendChild(label);
+
+        if (citasDelDia.length > 0) {
+          citasDelDia.forEach(c => {
+            const tag = document.createElement("div");
+            tag.textContent = c.servicio_motivo;
+            tag.style.background = "#a6e3a1";
+            tag.style.marginTop = "2px";
+            tag.style.borderRadius = "4px";
+            tag.style.padding = "2px 4px";
+            tag.style.fontSize = "0.75rem";
+            cell.appendChild(tag);
+          });
+        }
+
+        calendarGrid.appendChild(cell);
+      }
+    }
+  </script>
 </body>
 </html>
-
