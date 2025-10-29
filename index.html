@@ -20,8 +20,6 @@
     padding: 20px;
     text-align: center;
     font-size: 1.8em;
-    position: sticky;
-    top: 0;
   }
   main {
     display: grid;
@@ -102,10 +100,25 @@
     z-index: 10;
     width: 200px;
   }
+  .upload-section {
+    text-align: center;
+    margin: 15px;
+  }
+  input[type="file"] {
+    padding: 10px;
+    border: 1px solid #1b8c47;
+    border-radius: 8px;
+    background-color: #f8fff9;
+  }
 </style>
 </head>
 <body>
 <header>Rendimiento del Agente</header>
+
+<div class="upload-section">
+  <p>📂 Sube el archivo <strong>TESTDB.xlsx</strong> para visualizar los datos:</p>
+  <input type="file" id="fileInput" accept=".xlsx" />
+</div>
 
 <main>
   <section>
@@ -126,9 +139,8 @@
 </footer>
 
 <script>
-// === FUNCIONES UTILITARIAS ===
 function parseDate(dateStr) {
-  // Convierte "31/10/2025" a formato Date válido (dd/mm/yyyy -> yyyy-mm-dd)
+  if (!dateStr) return null;
   const [day, month, year] = dateStr.split("/");
   return new Date(`${year}-${month}-${day}`);
 }
@@ -138,51 +150,57 @@ function toggleTooltip(id) {
   tooltip.style.display = tooltip.style.display === "block" ? "none" : "block";
 }
 
-// === CARGA DEL ARCHIVO EXCEL ===
-fetch('TESTDB.xlsx')
-  .then(res => res.arrayBuffer())
-  .then(ab => {
-    const data = new Uint8Array(ab);
+document.getElementById('fileInput').addEventListener('change', handleFile);
+
+function handleFile(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const data = new Uint8Array(e.target.result);
     const workbook = XLSX.read(data, { type: "array" });
     const sheetName = workbook.SheetNames[0];
     const sheet = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
 
-    // === PROCESAR DATOS ===
     const citasPorFecha = {};
     const citas = [];
 
     sheet.forEach(row => {
       const fecha = parseDate(row.fecha_cita);
+      if (!fecha || isNaN(fecha)) return;
       const fechaKey = fecha.toISOString().split("T")[0];
       citas.push({ fecha, servicio: row.servicio_motivo });
       citasPorFecha[fechaKey] = (citasPorFecha[fechaKey] || 0) + 1;
     });
 
-    // === GRAFICAR ===
-    const labels = Object.keys(citasPorFecha).sort();
-    const values = labels.map(l => citasPorFecha[l]);
-
-    new Chart(document.getElementById('chartCitas'), {
-      type: 'bar',
-      data: {
-        labels: labels,
-        datasets: [{
-          label: 'Citas atendidas',
-          data: values,
-          backgroundColor: '#1b8c47'
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: { legend: { display: false } }
-      }
-    });
-
-    // === CREAR CALENDARIO ===
+    crearGrafico(citasPorFecha);
     crearCalendario(citas);
-  });
+  };
+  reader.readAsArrayBuffer(file);
+}
 
-// === FUNCION PARA MOSTRAR EL CALENDARIO ===
+function crearGrafico(citasPorFecha) {
+  const labels = Object.keys(citasPorFecha).sort();
+  const values = labels.map(l => citasPorFecha[l]);
+
+  new Chart(document.getElementById('chartCitas'), {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Citas atendidas',
+        data: values,
+        backgroundColor: '#1b8c47'
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } }
+    }
+  });
+}
+
 function crearCalendario(citas) {
   const contenedor = document.getElementById("calendar");
   contenedor.innerHTML = "";
@@ -195,7 +213,6 @@ function crearCalendario(citas) {
   const ultimoDia = new Date(anio, mes + 1, 0);
   const diasEnMes = ultimoDia.getDate();
 
-  // Espacios vacíos antes del primer día
   for (let i = 0; i < primerDia.getDay(); i++) {
     contenedor.appendChild(document.createElement("div"));
   }
